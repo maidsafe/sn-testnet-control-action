@@ -1,0 +1,22 @@
+name: Destroy Network
+description: Destroys an existing network
+inputs:
+  network-name:
+    description: The name of the network
+    required: true
+  provider:
+    description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Destroy testnet
+      env:
+        NETWORK_NAME: ${{ inputs.network-name }}
+        PROVIDER: ${{ inputs.provider }}
+      shell: bash
+      run: |
+        set -e
+        cd sn-testnet-deploy
+        testnet-deploy clean --name "$NETWORK_NAME" --provider "$PROVIDER"

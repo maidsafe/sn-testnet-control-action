@@ -1,0 +1,125 @@
+name: Launch Network
+description: Launches a remote Autonomi network with a given specification
+inputs:
+  ansible-forks:
+    description: The number of forks to use with Ansible
+  ansible-verbose:
+    description: Set to use verbose output for Ansible
+    default: false
+  beta-encryption-key:
+    description: Supply an encryption key that will be used with the auditor.
+  bootstrap-node-count:
+    description: Number of node services to run on each bootstrap node VM
+  bootstrap-node-vm-count:
+    description: Number of bootstrap node VMs to be deployed
+  environment-type:
+    description: >
+      Possible values are 'development', 'staging' and 'production'. This value determines the sizes
+      and counts of VMs. The counts can be overridden with the other count inputs.
+    required: true
+  faucet-version:
+    description: Supply a version for the faucet. Otherwise the latest will be used.
+  log-format:
+    description: Set the log format for the nodes, can be 'json' or 'default'. Defaults to 'default' if not set.
+  network-contacts-file-name:
+    description: Provide a name for the network contacts file
+  network-name:
+    description: The name of the testnet.
+    required: true
+  node-count:
+    description: Number of node services to run on each node VM
+  node-vm-count:
+    description: Number of node VMs to be deployed
+  public-rpc:
+    description: Set to make node manager RPC daemons publicly accessible
+    required: true
+    default: false
+  protocol-version:
+    description: The network protocol version can be set to 'restricted' or any custom version string.
+  provider:
+    description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
+    required: true
+  rust-log:
+    description: Set RUST_LOG to this value for testnet-deploy
+    required: false
+  safenode-features:
+    description: Comma-separated list of features to be used when building a branch of safenode
+  safe-version:
+    description: Supply a version for safe. Otherwise the latest will be used.
+  safenode-version:
+    description: Supply a version for safenode. Otherwise the latest will be used.
+  safenode-manager-version:
+    description: Supply a version for safenode-manager. Otherwise the latest will be used.
+  safe-network-branch:
+    description: >
+      Build binaries from the specified safe_network branch. The testnet will use these binaries.
+  safe-network-user:
+    description: >
+      Build binaries from the safe_network repository owned by this org or username. The testnet
+      will use these binaries.
+  sn-auditor-version:
+    description: Supply a version for the sn-auditor. Otherwise the latest will be used.
+  uploader-vm-count:
+    description: Number of uploader VMs to be deployed
+
+runs:
+  using: composite
+  steps:
+    - name: Create network
+      env:
+        ANSIBLE_FORKS: ${{ inputs.ansible-forks }}
+        ANSIBLE_VERBOSE: ${{ inputs.ansible-verbose }}
+        BETA_ENCRYPTION_KEY: ${{ inputs.beta-encryption-key }}
+        BOOTSTRAP_NODE_COUNT: ${{ inputs.bootstrap-node-count }}
+        BOOTSTRAP_NODE_VM_COUNT: ${{ inputs.bootstrap-node-vm-count }}
+        ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
+        FAUCET_VERSION: ${{ inputs.faucet-version }}
+        LOG_FORMAT: ${{ inputs.log-format }}
+        NETWORK_CONTACTS_FILE_NAME: ${{ inputs.network-contacts-file-name }}
+        NETWORK_NAME: ${{ inputs.network-name }}
+        NODE_COUNT: ${{ inputs.node-count }}
+        NODE_VM_COUNT: ${{ inputs.node-vm-count }}
+        PROTOCOL_VERSION: ${{ inputs.protocol-version }}
+        PROVIDER: ${{ inputs.provider }}
+        PUBLIC_RPC: ${{ inputs.public-rpc }}
+        RUST_LOG: ${{ inputs.rust-log }}
+        SAFENODE_FEATURES: ${{ inputs.safenode-features }}
+        SAFE_VERSION: ${{ inputs.safe-version }}
+        SAFENODE_VERSION: ${{ inputs.safenode-version }}
+        SAFENODE_MANAGER_VERSION: ${{ inputs.safenode-manager-version }}
+        SAFE_NETWORK_BRANCH: ${{ inputs.safe-network-branch }}
+        SAFE_NETWORK_USER: ${{ inputs.safe-network-user }}
+        SN_AUDITOR_VERSION: ${{ inputs.sn-auditor-version }}
+        UPLOADER_VM_COUNT: ${{ inputs.uploader-vm-count }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        command="testnet-deploy deploy \
+          --name $NETWORK_NAME \
+          --environment-type $ENVIRONMENT_TYPE \
+          --provider $PROVIDER "
+        [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
+        [[ $ANSIBLE_VERBOSE == "true" ]] && command="$command --ansible-verbose "
+        [[ -n $BETA_ENCRYPTION_KEY ]] && command="$command --beta-encryption-key $BETA_ENCRYPTION_KEY "
+        [[ -n $BOOTSTRAP_NODE_COUNT ]] && command="$command --bootstrap-node-count $BOOTSTRAP_NODE_COUNT "
+        [[ -n $BOOTSTRAP_NODE_VM_COUNT ]] && command="$command --bootstrap-node-vm-count $BOOTSTRAP_NODE_VM_COUNT "
+        [[ -n $FAUCET_VERSION ]] && command="$command --faucet-version $FAUCET_VERSION "
+        [[ -n $LOG_FORMAT ]] && command="$command --log-format $LOG_FORMAT "
+        [[ -n $NETWORK_CONTACTS_FILE_NAME ]] && command="$command --network-contacts-file-name $NETWORK_CONTACTS_FILE_NAME "
+        [[ -n $NODE_COUNT ]] && command="$command --node-count $NODE_COUNT "
+        [[ -n $NODE_VM_COUNT ]] && command="$command --node-vm-count $NODE_VM_COUNT "
+        [[ -n $PROTOCOL_VERSION ]] && command="$command --protocol-version $PROTOCOL_VERSION "
+        [[ $PUBLIC_RPC == "true" ]] && command="$command --public-rpc "
+        [[ -n $SAFENODE_FEATURES ]] && command="$command --safenode-features $SAFENODE_FEATURES "
+        [[ -n $SAFE_VERSION ]] && command="$command --safe-version $SAFE_VERSION "
+        [[ -n $SAFENODE_VERSION ]] && command="$command --safenode-version $SAFENODE_VERSION "
+        [[ -n $SAFENODE_MANAGER_VERSION ]] && command="$command --safenode-manager-version $SAFENODE_MANAGER_VERSION "
+        [[ -n $SN_AUDITOR_VERSION ]] && command="$command --sn-auditor-version $SN_AUDITOR_VERSION "
+        [[ -n $SAFE_NETWORK_BRANCH ]] && command="$command --branch $SAFE_NETWORK_BRANCH "
+        [[ -n $SAFE_NETWORK_USER ]] && command="$command --repo-owner $SAFE_NETWORK_USER "
+        [[ -n $UPLOADER_VM_COUNT ]] && command="$command --uploader-vm-count $UPLOADER_VM_COUNT "
+
+        echo "Will run testnet-deploy with: $command"
+        eval $command

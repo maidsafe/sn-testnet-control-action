@@ -1,0 +1,124 @@
+name: Init Testnet Deploy
+description: >
+  Sets up testnet-deploy to be used as part of workflow. A version can be specified, or a repository
+  owner and branch can be used. The latter will build the binary from source. This can be useful for
+  testing from a fork. Many of these inputs are secrets that are used to 
+inputs:
+  ansible-vault-password:
+    description: Password for Ansible vault
+    required: true
+  aws-access-key-id:
+    description: AWS access key ID
+    required: true
+  aws-access-key-secret:
+    description: AWS access key
+    required: true
+  aws-region:
+    description: AWS region
+    default: eu-west-2
+    required: true
+  branch:
+    description: >
+      The branch of the testnet-deploy repository you wish to build from. If this argument is used,
+      testnet-deploy will be built from source.
+  do-token:
+    description: Digital Ocean Authorization token
+    required: true
+  org:
+    description: >
+      The organisation/user of the testnet-deploy repository you wish to build from. If this
+      argument is used, testnet-deploy will be built from source.
+  ssh-secret-key:
+    description: SSH key that Ansible will use to connect to the node VMs.
+    required: true
+  version:
+    description: Specify a version of testnet-deploy to use. Otherwise the latest will be used.
+
+runs:
+  using: composite
+  steps:
+    - name: install terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_wrapper: false
+
+    - name: install ansible
+      shell: bash
+      run: |
+        sudo apt-get update -y
+        # There is some issue with the latest version of Ansible not correctly
+        # reading the Digital Ocean token from environment variables, so just
+        # pin to this version for now.
+        pip install --user ansible==8.2.0
+        pip install --user boto3
+        sudo apt-get install jq -y
+    - name: configure testnet-deploy
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_DEFAULT_REGION: ${{ inputs.aws-region }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-access-key-secret }}
+        DO_PAT: ${{ inputs.do-token }}
+        TERRAFORM_STATE_BUCKET_NAME: maidsafe-org-infra-tfstate
+      shell: bash
+      run: |
+        set -e
+
+        mkdir ~/.ssh
+        echo "${{ inputs.ssh-secret-key }}" >> ~/.ssh/id_rsa
+        chmod 0400 ~/.ssh/id_rsa
+        ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
+
+        mkdir ~/.ansible
+        echo "${{ inputs.ansible-vault-password }}" >> ~/.ansible/vault-password
+
+        echo "ANSIBLE_VAULT_PASSWORD_PATH=/home/runner/.ansible/vault-password" >> $GITHUB_ENV
+        echo "AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+        echo "AWS_DEFAULT_REGION=${{ env.AWS_DEFAULT_REGION }}" >> $GITHUB_ENV
+        echo "AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+        echo "DO_PAT=${{ env.DO_PAT }}" >> $GITHUB_ENV
+        echo "SSH_KEY_PATH=/home/runner/.ssh/id_rsa" >> $GITHUB_ENV
+        echo "TERRAFORM_STATE_BUCKET_NAME=${{ env.TERRAFORM_STATE_BUCKET_NAME }}" >> $GITHUB_ENV
+
+    - name: clone and build testnet-deploy
+      if: ${{ inputs.branch != '' }}
+      env:
+        TESTNET_DEPLOY_BRANCH: ${{ inputs.branch }}
+        TESTNET_DEPLOY_ORG: ${{ inputs.org }}
+      shell: bash
+      run: |
+        set -e
+
+        git clone --quiet --single-branch --depth 1 \
+          --branch $TESTNET_DEPLOY_BRANCH https://github.com/$TESTNET_DEPLOY_ORG/sn-testnet-deploy
+
+        cd sn-testnet-deploy
+        cargo build --release
+        sudo cp target/release/testnet-deploy /usr/local/bin
+
+    - name: download a binary
+      if: ${{ inputs.branch == '' }}
+      env:
+        BASE_URL: https://sn-testnet-deploy.s3.eu-west-2.amazonaws.com
+      shell: bash
+      run: |
+        set -e
+
+        if [[ -n "${{ inputs.version }}" ]]; then
+          version="${{ inputs.version }}"
+        else
+          version=$(curl --silent https://crates.io/api/v1/crates/sn-testnet-deploy | \
+            jq -r .crate.newest_version)
+        fi
+
+        # We still need the source because that's where the Terraform and Ansible files are. Longer
+        # term we could copy these to a system-wide location and extend the testnet tool to look
+        # there.
+        git clone https://github.com/maidsafe/sn-testnet-deploy
+        (
+          cd sn-testnet-deploy
+          git checkout v${version}
+        )
+
+        curl -L -O $BASE_URL/testnet-deploy-${version}-x86_64-unknown-linux-musl.zip
+        unzip testnet-deploy-${version}-x86_64-unknown-linux-musl.zip
+        sudo cp testnet-deploy /usr/local/bin
