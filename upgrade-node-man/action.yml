@@ -1,0 +1,26 @@
+name: Upgrade Node Manager
+description: Upgrade the node manager binary on all VMs in the deployment
+inputs:
+  network-name:
+    description: The name of the network to upgrade
+    required: true
+  version:
+    description: The safenode-manager version to upgrade to
+
+runs:
+  using: composite
+  steps:
+    - name: upgrade node manager
+      env:
+        NETWORK_NAME: ${{ inputs.network-name }}
+        SAFENODE_MANAGER_VERSION: ${{ inputs.version }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        command="testnet-deploy upgrade-node-manager --name $NETWORK_NAME "
+        [[ -n $SAFENODE_MANAGER_VERSION ]] && command="$command --version $SAFENODE_MANAGER_VERSION "
+
+        echo "Will run testnet-deploy with: $command"
+        eval $command

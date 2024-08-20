@@ -1,0 +1,32 @@
+name: Upgrade Telegraf Config
+description: Pull the latest Telegraf configuration from the network-dashboards repository
+inputs:
+  ansible-forks:
+    description: >
+      The number of forks to use with Ansible. A network should be upgraded gradually, so this
+      should be small. The default used by testnet-deploy is 2.
+  ansible-verbose:
+    description: Set to true to run Ansible with its most verbose output
+  network-name:
+    description: The name of the network to upgrade
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: upgrade telegraf
+      env:
+        ANSIBLE_FORKS: ${{ inputs.ansible-forks }}
+        ANSIBLE_VERBOSE: ${{ inputs.ansible-verbose }}
+        NETWORK_NAME: ${{ inputs.network-name }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        command="testnet-deploy upgrade-telegraf --name $NETWORK_NAME "
+        [[ $ANSIBLE_VERBOSE == "true" ]] && command="$command --ansible-verbose "
+        [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
+
+        echo "Will run testnet-deploy with: $command"
+        eval $command

@@ -1,0 +1,26 @@
+name: Start Nodes
+description: Use testnet-deploy to start all nodes for a deployment
+inputs:
+  ansible-forks:
+    description: The number of forks, or parallel connections, to use with Ansible. Defaults to 50.
+  network-name:
+    description: The name of the network
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: start
+      env:
+        ANSIBLE_FORKS: ${{ inputs.ansible-forks }}
+        NETWORK_NAME: ${{ inputs.network-name }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        command="testnet-deploy start --name $NETWORK_NAME "
+        [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
+
+        echo "Will run testnet-deploy with: $command"
+        eval $command
