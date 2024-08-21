@@ -1,0 +1,38 @@
+name: Start Telegraf
+description: Use testnet-deploy to start the Telegraf service on all VMs
+inputs:
+  ansible-forks:
+    description: The number of forks, or parallel connections, to use with Ansible. Defaults to 50.
+  custom-inventory:
+    description: >
+      Run the start telegraf playbook against particular VMs in the environment.
+      Should be a comma-separated list.
+  network-name:
+    description: The name of the network
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: start telegraf
+      env:
+        ANSIBLE_FORKS: ${{ inputs.ansible-forks }}
+        CUSTOM_INVENTORY: ${{ inputs.custom-inventory }}
+        NETWORK_NAME: ${{ inputs.network-name }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        command="testnet-deploy stop-telegraf --name $NETWORK_NAME "
+        [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
+
+        if [[ -n $CUSTOM_INVENTORY ]]; then
+          IFS=',' read -ra VM_NAMES <<< "$CUSTOM_INVENTORY"
+          for vm_name in "${VM_NAMES[@]}"; do
+            command="$command --custom-inventory $vm_name"
+          done
+        fi
+
+        echo "Will run testnet-deploy with: $command"
+        eval $command
