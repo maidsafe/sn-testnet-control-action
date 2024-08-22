@@ -1,6 +1,10 @@
 name: Upgrade Node Manager
 description: Upgrade the node manager binary on all VMs in the deployment
 inputs:
+  custom-inventory:
+    description: >
+      Run the upgrade against particular VMs in the environment.
+      Should be a comma-separated list.
   network-name:
     description: The name of the network to upgrade
     required: true
@@ -12,6 +16,7 @@ runs:
   steps:
     - name: upgrade node manager
       env:
+        CUSTOM_INVENTORY: ${{ inputs.custom-inventory }}
         NETWORK_NAME: ${{ inputs.network-name }}
         SAFENODE_MANAGER_VERSION: ${{ inputs.version }}
       shell: bash
@@ -21,6 +26,13 @@ runs:
         cd sn-testnet-deploy
         command="testnet-deploy upgrade-node-manager --name $NETWORK_NAME "
         [[ -n $SAFENODE_MANAGER_VERSION ]] && command="$command --version $SAFENODE_MANAGER_VERSION "
+
+        if [[ -n $CUSTOM_INVENTORY ]]; then
+          IFS=',' read -ra VM_NAMES <<< "$CUSTOM_INVENTORY"
+          for vm_name in "${VM_NAMES[@]}"; do
+            command="$command --custom-inventory $vm_name"
+          done
+        fi
 
         echo "Will run testnet-deploy with: $command"
         eval $command
