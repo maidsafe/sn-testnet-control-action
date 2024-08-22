@@ -24,7 +24,7 @@ runs:
         set -e
 
         cd sn-testnet-deploy
-        command="testnet-deploy stop-telegraf --name $NETWORK_NAME "
+        command="testnet-deploy start-telegraf --name $NETWORK_NAME "
         [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
 
         if [[ -n $CUSTOM_INVENTORY ]]; then
