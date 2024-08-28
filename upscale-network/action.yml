@@ -1,10 +1,15 @@
 name: Upscale Network
 description: Upscale an existing network to a given configuration
 inputs:
+  auditor-vm-count:
+    description: Number of auditor VMs to be deployed
   bootstrap-node-count:
     description: Number of node services to run on each bootstrap node VM
   bootstrap-node-vm-count:
     description: Number of bootstrap node VMs to be deployed
+  infra-only:
+    description: Only run the terraform part to upscale the machines
+    default: false
   network-name:
     description: The name of the network
     required: true
@@ -12,6 +17,9 @@ inputs:
     description: Number of node services to run on each node VM
   node-vm-count:
     description: Number of node VMs to be deployed
+  plan:
+    description: Run a plan for the operation without performing it
+    default: false
   public-rpc:
     description: Set to make node manager RPC daemons publicly accessible
     required: true
@@ -30,12 +38,15 @@ runs:
   steps:
     - name: upscale network
       env:
+        DESIRED_AUDITOR_VM_COUNT: ${{ inputs.auditor-vm-count }}
         DESIRED_BOOTSTRAP_NODE_COUNT: ${{ inputs.bootstrap-node-count }}
         DESIRED_BOOTSTRAP_NODE_VM_COUNT: ${{ inputs.bootstrap-node-vm-count }}
         DESIRED_NODE_COUNT: ${{ inputs.node-count }}
         DESIRED_NODE_VM_COUNT: ${{ inputs.node-vm-count }}
         DESIRED_UPLOADER_VM_COUNT: ${{ inputs.uploader-vm-count }}
+        INFRA_ONLY: ${{ inputs.infra-only }}
         NETWORK_NAME: ${{ inputs.network-name }}
+        PLAN: ${{ inputs.plan }}
         PROVIDER: ${{ inputs.provider }}
         PUBLIC_RPC: ${{ inputs.public-rpc }}
         RUST_LOG: ${{ inputs.rust-log }}
@@ -47,11 +58,14 @@ runs:
         command="testnet-deploy upscale \
           --name $NETWORK_NAME \
           --provider $PROVIDER "
+        [[ -n $DESIRED_AUDITOR_VM_COUNT ]] && command="$command --desired-auditor-vm-count $DESIRED_AUDITOR_VM_COUNT "
         [[ -n $DESIRED_BOOTSTRAP_NODE_COUNT ]] && command="$command --desired-bootstrap-node-count $DESIRED_BOOTSTRAP_NODE_COUNT "
         [[ -n $DESIRED_BOOTSTRAP_NODE_VM_COUNT ]] && command="$command --desired-bootstrap-node-vm-count $DESIRED_BOOTSTRAP_NODE_VM_COUNT "
         [[ -n $DESIRED_NODE_COUNT ]] && command="$command --desired-node-count $DESIRED_NODE_COUNT "
         [[ -n $DESIRED_NODE_VM_COUNT ]] && command="$command --desired-node-vm-count $DESIRED_NODE_VM_COUNT "
         [[ -n $DESIRED_UPLOADER_VM_COUNT ]] && command="$command --desired-uploader-vm-count $DESIRED_UPLOADER_VM_COUNT "
+        [[ $INFRA_ONLY == "true" ]] && command="$command --infra-only "
+        [[ $PLAN == "true" ]] && command="$command --plan "
         [[ $PUBLIC_RPC == "true" ]] && command="$command --public-rpc "
 
         echo "Will run testnet-deploy with: $command"
