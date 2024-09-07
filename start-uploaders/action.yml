@@ -16,4 +16,4 @@ runs:
         set -e
 
         cd sn-testnet-deploy
-        testnet-deploy start-uploaders --name $NETWORK_NAME
+        testnet-deploy uploaders start --name $NETWORK_NAME
