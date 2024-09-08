@@ -1,0 +1,19 @@
+name: Start Faucet
+description: Use testnet-deploy to stop the faucet for the environment
+inputs:
+  network-name:
+    description: The name of the network
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: start faucet
+      env:
+        NETWORK_NAME: ${{ inputs.network-name }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        testnet-deploy faucet stop --name $NETWORK_NAME
