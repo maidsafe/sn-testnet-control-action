@@ -1,0 +1,53 @@
+name: fetch logs
+description: fetch network logs
+inputs:
+  provider:
+    description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
+    required: true
+  retry_attempts:
+    description: retry attempts
+    required: true
+  rust_log:
+    description: log level to obtain
+    required: true
+  network-name:
+    description: name of the testnet
+    required: true
+
+
+runs:
+  using: composite
+  steps:
+    - name: fetch network logs
+      env:
+        PROVIDER: ${{ inputs.provider }}
+        RETRY_ATTEMPTS: ${{ inputs.re-attempts }}
+        RUST_LOG: ${{ inputs.rust-log }}
+        NETWORK_NAME: ${{ inputs.network-name }}
+      shell: bash
+      run: |
+        set -e
+        cd sn-testnet-deploy
+
+        max_attempts=$((RETRY_ATTEMPTS + 1))
+        for i in $(seq 1 $max_attempts); do
+          echo "Attempt $i of $max_attempts"
+
+          set +e # Temporarily turn off 'exit on error'
+          testnet-deploy logs rsync --name "$NETWORK_NAME" --provider "$PROVIDER"
+          result=$?
+          set -e # Re-enable 'exit on error'
+
+          if [[ $result -eq 0 ]]; then
+            echo "Testnet tool completed successfully."
+            break
+          else
+            echo "Attempt $i of testnet tool failed. Retrying..."
+          fi
+        done
+
+        if [[ $result -ne 0 ]]; then
+          echo "All attempts to run testnet tool failed!!"
+          exit 1
+        fi
+        
