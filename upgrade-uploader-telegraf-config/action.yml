@@ -1,4 +1,4 @@
-name: Upgrade Node Telegraf Config
+name: Upgrade Uploader Telegraf Config
 description: Pull the latest Telegraf configuration from the network-dashboards repository
 inputs:
   ansible-forks:
@@ -22,7 +22,7 @@ runs:
         set -e
 
         cd sn-testnet-deploy
-        command="testnet-deploy upgrade-node-telegraf-config --name $NETWORK_NAME "
+        command="testnet-deploy upgrade-uploader-telegraf-config --name $NETWORK_NAME "
         [[ $ANSIBLE_VERBOSE == "true" ]] && command="$command --ansible-verbose "
         [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
 
