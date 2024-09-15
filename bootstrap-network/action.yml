@@ -1,0 +1,92 @@
+name: Bootstrap Network
+description: Launches a remote Autonomi network that is bootstrapped from an existing network
+inputs:
+  ansible-forks:
+    description: The number of forks to use with Ansible
+  ansible-verbose:
+    description: Set to use verbose output for Ansible
+    default: false
+  environment-type:
+    description: >
+      Possible values are 'development', 'staging' and 'production'. This value determines the sizes
+      and counts of VMs. The counts can be overridden with the other count inputs.
+    required: true
+  log-format:
+    description: Set the log format for the nodes, can be 'json' or 'default'. Defaults to 'default' if not set.
+  network-contacts-file-name:
+    description: Provide a name for the network contacts file
+  network-name:
+    description: The name of the testnet.
+    required: true
+  node-count:
+    description: Number of node services to run on each node VM
+  node-vm-count:
+    description: Number of node VMs to be deployed
+  peer:
+    description: A peer from the network to bootstrap from. Should be in multiaddr format.
+    required: true
+  provider:
+    description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
+    required: true
+  rust-log:
+    description: Set RUST_LOG to this value for testnet-deploy
+    required: false
+  safenode-features:
+    description: Comma-separated list of features to be used when building a branch of safenode
+  safenode-version:
+    description: Supply a version for safenode. Otherwise the latest will be used.
+  safenode-manager-version:
+    description: Supply a version for safenode-manager. Otherwise the latest will be used.
+  safe-network-branch:
+    description: >
+      Build binaries from the specified safe_network branch. The testnet will use these binaries.
+  safe-network-user:
+    description: >
+      Build binaries from the safe_network repository owned by this org or username. The testnet
+      will use these binaries.
+
+runs:
+  using: composite
+  steps:
+    - name: Bootstrap network
+      env:
+        ANSIBLE_FORKS: ${{ inputs.ansible-forks }}
+        ANSIBLE_VERBOSE: ${{ inputs.ansible-verbose }}
+        ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
+        LOG_FORMAT: ${{ inputs.log-format }}
+        NETWORK_CONTACTS_FILE_NAME: ${{ inputs.network-contacts-file-name }}
+        NETWORK_NAME: ${{ inputs.network-name }}
+        NODE_COUNT: ${{ inputs.node-count }}
+        NODE_VM_COUNT: ${{ inputs.node-vm-count }}
+        PEER: ${{ inputs.peer }}
+        PROVIDER: ${{ inputs.provider }}
+        RUST_LOG: ${{ inputs.rust-log }}
+        SAFENODE_FEATURES: ${{ inputs.safenode-features }}
+        SAFENODE_VERSION: ${{ inputs.safenode-version }}
+        SAFENODE_MANAGER_VERSION: ${{ inputs.safenode-manager-version }}
+        SAFE_NETWORK_BRANCH: ${{ inputs.safe-network-branch }}
+        SAFE_NETWORK_USER: ${{ inputs.safe-network-user }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        command="testnet-deploy bootstrap \
+          --name $NETWORK_NAME \
+          --environment-type $ENVIRONMENT_TYPE \
+          --bootstrap-peer $PEER \
+          --provider $PROVIDER "
+        [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
+        [[ $ANSIBLE_VERBOSE == "true" ]] && command="$command --ansible-verbose "
+        [[ -n $LOG_FORMAT ]] && command="$command --log-format $LOG_FORMAT "
+        [[ -n $NETWORK_CONTACTS_FILE_NAME ]] && command="$command --network-contacts-file-name $NETWORK_CONTACTS_FILE_NAME "
+        [[ -n $NODE_COUNT ]] && command="$command --node-count $NODE_COUNT "
+        [[ -n $NODE_VM_COUNT ]] && command="$command --node-vm-count $NODE_VM_COUNT "
+        [[ -n $SAFENODE_FEATURES ]] && command="$command --safenode-features $SAFENODE_FEATURES "
+        [[ -n $SAFENODE_VERSION ]] && command="$command --safenode-version $SAFENODE_VERSION "
+        [[ -n $SAFENODE_MANAGER_VERSION ]] && command="$command --safenode-manager-version $SAFENODE_MANAGER_VERSION "
+        [[ -n $SAFE_NETWORK_BRANCH ]] && command="$command --branch $SAFE_NETWORK_BRANCH "
+        [[ -n $SAFE_NETWORK_USER ]] && command="$command --repo-owner $SAFE_NETWORK_USER "
+
+        echo "Will run testnet-deploy with: $command"
+        eval $command
