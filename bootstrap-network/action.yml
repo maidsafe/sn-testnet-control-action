@@ -11,6 +11,10 @@ inputs:
       Possible values are 'development', 'staging' and 'production'. This value determines the sizes
       and counts of VMs. The counts can be overridden with the other count inputs.
     required: true
+  foundation-pk:
+    description: Optionally set the foundation public key for a custom safenode binary.
+  genesis-pk:
+    description: Optionally set the genesis public key for a custom safenode binary.
   log-format:
     description: Set the log format for the nodes, can be 'json' or 'default'. Defaults to 'default' if not set.
   network-contacts-file-name:
@@ -18,10 +22,14 @@ inputs:
   network-name:
     description: The name of the testnet.
     required: true
+  network-royalties-pk:
+    description: Optionally set the network royalties public key for a custom safenode binary.
   node-count:
     description: Number of node services to run on each node VM
   node-vm-count:
     description: Number of node VMs to be deployed
+  payment-forward-pk:
+    description: Optionally set the payment forward public key for a custom safenode binary.
   peer:
     description: A peer from the network to bootstrap from. Should be in multiaddr format.
     required: true
@@ -53,11 +61,15 @@ runs:
         ANSIBLE_FORKS: ${{ inputs.ansible-forks }}
         ANSIBLE_VERBOSE: ${{ inputs.ansible-verbose }}
         ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
+        FOUNDATION_PK: ${{ inputs.foundation-pk }}
+        GENESIS_PK: ${{ inputs.genesis-pk }}
         LOG_FORMAT: ${{ inputs.log-format }}
         NETWORK_CONTACTS_FILE_NAME: ${{ inputs.network-contacts-file-name }}
         NETWORK_NAME: ${{ inputs.network-name }}
         NODE_COUNT: ${{ inputs.node-count }}
         NODE_VM_COUNT: ${{ inputs.node-vm-count }}
+        NETWORK_ROYALTIES_PK: ${{ inputs.network-royalties-pk }}
+        PAYMENT_FORWARD_PK: ${{ inputs.payment-forward-pk }}
         PEER: ${{ inputs.peer }}
         PROVIDER: ${{ inputs.provider }}
         RUST_LOG: ${{ inputs.rust-log }}
@@ -78,10 +90,14 @@ runs:
           --provider $PROVIDER "
         [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
         [[ $ANSIBLE_VERBOSE == "true" ]] && command="$command --ansible-verbose "
+        [[ -n $FOUNDATION_PK ]] && command="$command --foundation-pk $FOUNDATION_PK "
+        [[ -n $GENESIS_PK ]] && command="$command --genesis-pk $GENESIS_PK "
         [[ -n $LOG_FORMAT ]] && command="$command --log-format $LOG_FORMAT "
         [[ -n $NETWORK_CONTACTS_FILE_NAME ]] && command="$command --network-contacts-file-name $NETWORK_CONTACTS_FILE_NAME "
+        [[ -n $NETWORK_ROYALTIES_PK ]] && command="$command --network-royalties-pk $NETWORK_ROYALTIES_PK "
         [[ -n $NODE_COUNT ]] && command="$command --node-count $NODE_COUNT "
         [[ -n $NODE_VM_COUNT ]] && command="$command --node-vm-count $NODE_VM_COUNT "
+        [[ -n $PAYMENT_FORWARD_PK ]] && command="$command --payment-forward-pk $PAYMENT_FORWARD_PK "
         [[ -n $SAFENODE_FEATURES ]] && command="$command --safenode-features $SAFENODE_FEATURES "
         [[ -n $SAFENODE_VERSION ]] && command="$command --safenode-version $SAFENODE_VERSION "
         [[ -n $SAFENODE_MANAGER_VERSION ]] && command="$command --safenode-manager-version $SAFENODE_MANAGER_VERSION "

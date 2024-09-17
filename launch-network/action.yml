@@ -19,6 +19,10 @@ inputs:
     required: true
   faucet-version:
     description: Supply a version for the faucet. Otherwise the latest will be used.
+  foundation-pk:
+    description: Optionally set the foundation public key for a custom safenode binary.
+  genesis-pk:
+    description: Optionally set the genesis public key for a custom safenode binary.
   log-format:
     description: Set the log format for the nodes, can be 'json' or 'default'. Defaults to 'default' if not set.
   network-contacts-file-name:
@@ -26,10 +30,14 @@ inputs:
   network-name:
     description: The name of the testnet.
     required: true
+  network-royalties-pk:
+    description: Optionally set the network royalties public key for a custom safenode binary.
   node-count:
     description: Number of node services to run on each node VM
   node-vm-count:
     description: Number of node VMs to be deployed
+  payment-forward-pk:
+    description: Optionally set the payment forward public key for a custom safenode binary.
   public-rpc:
     description: Set to make node manager RPC daemons publicly accessible
     required: true
@@ -74,11 +82,15 @@ runs:
         BOOTSTRAP_NODE_VM_COUNT: ${{ inputs.bootstrap-node-vm-count }}
         ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
         FAUCET_VERSION: ${{ inputs.faucet-version }}
+        FOUNDATION_PK: ${{ inputs.foundation-pk }}
+        GENESIS_PK: ${{ inputs.genesis-pk }}
         LOG_FORMAT: ${{ inputs.log-format }}
         NETWORK_CONTACTS_FILE_NAME: ${{ inputs.network-contacts-file-name }}
         NETWORK_NAME: ${{ inputs.network-name }}
+        NETWORK_ROYALTIES_PK: ${{ inputs.network-royalties-pk }}
         NODE_COUNT: ${{ inputs.node-count }}
         NODE_VM_COUNT: ${{ inputs.node-vm-count }}
+        PAYMENT_FORWARD_PK: ${{ inputs.payment-forward-pk }}
         PROTOCOL_VERSION: ${{ inputs.protocol-version }}
         PROVIDER: ${{ inputs.provider }}
         PUBLIC_RPC: ${{ inputs.public-rpc }}
@@ -106,10 +118,14 @@ runs:
         [[ -n $BOOTSTRAP_NODE_COUNT ]] && command="$command --bootstrap-node-count $BOOTSTRAP_NODE_COUNT "
         [[ -n $BOOTSTRAP_NODE_VM_COUNT ]] && command="$command --bootstrap-node-vm-count $BOOTSTRAP_NODE_VM_COUNT "
         [[ -n $FAUCET_VERSION ]] && command="$command --faucet-version $FAUCET_VERSION "
+        [[ -n $FOUNDATION_PK ]] && command="$command --foundation-pk $FOUNDATION_PK "
+        [[ -n $GENESIS_PK ]] && command="$command --genesis-pk $GENESIS_PK "
         [[ -n $LOG_FORMAT ]] && command="$command --log-format $LOG_FORMAT "
         [[ -n $NETWORK_CONTACTS_FILE_NAME ]] && command="$command --network-contacts-file-name $NETWORK_CONTACTS_FILE_NAME "
+        [[ -n $NETWORK_ROYALTIES_PK ]] && command="$command --network-royalties-pk $NETWORK_ROYALTIES_PK "
         [[ -n $NODE_COUNT ]] && command="$command --node-count $NODE_COUNT "
         [[ -n $NODE_VM_COUNT ]] && command="$command --node-vm-count $NODE_VM_COUNT "
+        [[ -n $PAYMENT_FORWARD_PK ]] && command="$command --payment-forward-pk $PAYMENT_FORWARD_PK "
         [[ -n $PROTOCOL_VERSION ]] && command="$command --protocol-version $PROTOCOL_VERSION "
         [[ $PUBLIC_RPC == "true" ]] && command="$command --public-rpc "
         [[ -n $SAFENODE_FEATURES ]] && command="$command --safenode-features $SAFENODE_FEATURES "
@@ -123,7 +139,8 @@ runs:
 
         echo "Will run testnet-deploy with: $command"
         eval $command
-    - name: Set SAFE_PEERS and SN_INVENTORY (Linux)
+
+    - name: Set SAFE_PEERS and SN_INVENTORY
       shell: bash
       run: |
         inventory_path=/home/runner/.local/share/safe/testnet-deploy/"${{ inputs.network-name }}"-inventory.json
@@ -131,4 +148,3 @@ runs:
         genesis_multiaddr=$(jq -r '.genesis_multiaddr' $inventory_path)
         echo "SAFE_PEERS=$genesis_multiaddr" >> $GITHUB_ENV
         echo "SN_INVENTORY=$inventory_path" >> $GITHUB_ENV
-
