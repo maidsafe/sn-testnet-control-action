@@ -11,6 +11,8 @@ inputs:
       Possible values are 'development', 'staging' and 'production'. This value determines the sizes
       and counts of VMs. The counts can be overridden with the other count inputs.
     required: true
+  environment-vars:
+    description: Pass a comma-separated list of environment variables to safenode services
   foundation-pk:
     description: Optionally set the foundation public key for a custom safenode binary.
   genesis-pk:
@@ -36,9 +38,6 @@ inputs:
   provider:
     description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
     required: true
-  rust-log:
-    description: Set RUST_LOG to this value for testnet-deploy
-    required: false
   safenode-features:
     description: Comma-separated list of features to be used when building a branch of safenode
   safenode-version:
@@ -61,6 +60,7 @@ runs:
         ANSIBLE_FORKS: ${{ inputs.ansible-forks }}
         ANSIBLE_VERBOSE: ${{ inputs.ansible-verbose }}
         ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
+        ENVIRONMENT_VARS: ${{ inputs.environment-vars }}
         FOUNDATION_PK: ${{ inputs.foundation-pk }}
         GENESIS_PK: ${{ inputs.genesis-pk }}
         LOG_FORMAT: ${{ inputs.log-format }}
@@ -72,7 +72,6 @@ runs:
         PAYMENT_FORWARD_PK: ${{ inputs.payment-forward-pk }}
         PEER: ${{ inputs.peer }}
         PROVIDER: ${{ inputs.provider }}
-        RUST_LOG: ${{ inputs.rust-log }}
         SAFENODE_FEATURES: ${{ inputs.safenode-features }}
         SAFENODE_VERSION: ${{ inputs.safenode-version }}
         SAFENODE_MANAGER_VERSION: ${{ inputs.safenode-manager-version }}
@@ -91,6 +90,7 @@ runs:
         [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
         [[ $ANSIBLE_VERBOSE == "true" ]] && command="$command --ansible-verbose "
         [[ -n $FOUNDATION_PK ]] && command="$command --foundation-pk $FOUNDATION_PK "
+        [[ -n $ENVIRONMENT_VARS ]] && command="$command --env $ENVIRONMENT_VARS "
         [[ -n $GENESIS_PK ]] && command="$command --genesis-pk $GENESIS_PK "
         [[ -n $LOG_FORMAT ]] && command="$command --log-format $LOG_FORMAT "
         [[ -n $NETWORK_CONTACTS_FILE_NAME ]] && command="$command --network-contacts-file-name $NETWORK_CONTACTS_FILE_NAME "

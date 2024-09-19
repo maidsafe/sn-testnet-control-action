@@ -17,6 +17,8 @@ inputs:
       Possible values are 'development', 'staging' and 'production'. This value determines the sizes
       and counts of VMs. The counts can be overridden with the other count inputs.
     required: true
+  environment-vars:
+    description: Pass a comma-separated list of environment variables to safenode services
   faucet-version:
     description: Supply a version for the faucet. Otherwise the latest will be used.
   foundation-pk:
@@ -47,9 +49,6 @@ inputs:
   provider:
     description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
     required: true
-  rust-log:
-    description: Set RUST_LOG to this value for testnet-deploy
-    required: false
   safenode-features:
     description: Comma-separated list of features to be used when building a branch of safenode
   safe-version:
@@ -81,6 +80,7 @@ runs:
         BOOTSTRAP_NODE_COUNT: ${{ inputs.bootstrap-node-count }}
         BOOTSTRAP_NODE_VM_COUNT: ${{ inputs.bootstrap-node-vm-count }}
         ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
+        ENVIRONMENT_VARS: ${{ inputs.environment-vars }}
         FAUCET_VERSION: ${{ inputs.faucet-version }}
         FOUNDATION_PK: ${{ inputs.foundation-pk }}
         GENESIS_PK: ${{ inputs.genesis-pk }}
@@ -117,6 +117,7 @@ runs:
         [[ -n $BETA_ENCRYPTION_KEY ]] && command="$command --beta-encryption-key $BETA_ENCRYPTION_KEY "
         [[ -n $BOOTSTRAP_NODE_COUNT ]] && command="$command --bootstrap-node-count $BOOTSTRAP_NODE_COUNT "
         [[ -n $BOOTSTRAP_NODE_VM_COUNT ]] && command="$command --bootstrap-node-vm-count $BOOTSTRAP_NODE_VM_COUNT "
+        [[ -n $ENVIRONMENT_VARS ]] && command="$command --env $ENVIRONMENT_VARS "
         [[ -n $FAUCET_VERSION ]] && command="$command --faucet-version $FAUCET_VERSION "
         [[ -n $FOUNDATION_PK ]] && command="$command --foundation-pk $FOUNDATION_PK "
         [[ -n $GENESIS_PK ]] && command="$command --genesis-pk $GENESIS_PK "
