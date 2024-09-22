@@ -1,0 +1,22 @@
+name: Upgrade Uploaders
+description: Use testnet-deploy to upgrade the uploaders to use the latest safe client
+inputs:
+  network-name:
+    description: The name of the network
+    required: true
+  version:
+    description: >
+      The version of safe to use. If not supplied, the latest stable version will be used.
+
+runs:
+  using: composite
+  steps:
+    - name: upgrade uploaders
+      env:
+        NETWORK_NAME: ${{ inputs.network-name }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        testnet-deploy uploaders upgrade --name $NETWORK_NAME
