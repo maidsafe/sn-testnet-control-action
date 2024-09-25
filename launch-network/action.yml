@@ -17,6 +17,9 @@ inputs:
       Possible values are 'development', 'staging' and 'production'. This value determines the sizes
       and counts of VMs. The counts can be overridden with the other count inputs.
     required: true
+  downloaders-count:
+    description: Number of downloader services to run
+    default: '0'
   environment-vars:
     description: Pass a comma-separated list of environment variables to safenode services
   faucet-version:
@@ -79,6 +82,7 @@ runs:
         BETA_ENCRYPTION_KEY: ${{ inputs.beta-encryption-key }}
         BOOTSTRAP_NODE_COUNT: ${{ inputs.bootstrap-node-count }}
         BOOTSTRAP_NODE_VM_COUNT: ${{ inputs.bootstrap-node-vm-count }}
+        DOWNLOADERS_COUNT: ${{ inputs.downloaders-count }}
         ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
         ENVIRONMENT_VARS: ${{ inputs.environment-vars }}
         FAUCET_VERSION: ${{ inputs.faucet-version }}
@@ -117,6 +121,7 @@ runs:
         [[ -n $BETA_ENCRYPTION_KEY ]] && command="$command --beta-encryption-key $BETA_ENCRYPTION_KEY "
         [[ -n $BOOTSTRAP_NODE_COUNT ]] && command="$command --bootstrap-node-count $BOOTSTRAP_NODE_COUNT "
         [[ -n $BOOTSTRAP_NODE_VM_COUNT ]] && command="$command --bootstrap-node-vm-count $BOOTSTRAP_NODE_VM_COUNT "
+        [[ $DOWNLOADERS_COUNT -gt 0 ]] && command="$command --downloaders-count $DOWNLOADERS_COUNT "
         [[ -n $ENVIRONMENT_VARS ]] && command="$command --env $ENVIRONMENT_VARS "
         [[ -n $FAUCET_VERSION ]] && command="$command --faucet-version $FAUCET_VERSION "
         [[ -n $FOUNDATION_PK ]] && command="$command --foundation-pk $FOUNDATION_PK "
