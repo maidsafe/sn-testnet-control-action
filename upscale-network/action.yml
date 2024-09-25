@@ -7,6 +7,9 @@ inputs:
     description: Number of node services to run on each bootstrap node VM
   bootstrap-node-vm-count:
     description: Number of bootstrap node VMs to be deployed
+  downloaders-count:
+    description: Number of downloader services to run
+    default: '0'
   infra-only:
     description: Only run the terraform part to upscale the machines
     default: false
@@ -44,6 +47,7 @@ runs:
         DESIRED_NODE_COUNT: ${{ inputs.node-count }}
         DESIRED_NODE_VM_COUNT: ${{ inputs.node-vm-count }}
         DESIRED_UPLOADER_VM_COUNT: ${{ inputs.uploader-vm-count }}
+        DOWNLOADERS_COUNT: ${{ inputs.downloaders-count }}
         INFRA_ONLY: ${{ inputs.infra-only }}
         NETWORK_NAME: ${{ inputs.network-name }}
         PLAN: ${{ inputs.plan }}
@@ -64,6 +68,7 @@ runs:
         [[ -n $DESIRED_NODE_COUNT ]] && command="$command --desired-node-count $DESIRED_NODE_COUNT "
         [[ -n $DESIRED_NODE_VM_COUNT ]] && command="$command --desired-node-vm-count $DESIRED_NODE_VM_COUNT "
         [[ -n $DESIRED_UPLOADER_VM_COUNT ]] && command="$command --desired-uploader-vm-count $DESIRED_UPLOADER_VM_COUNT "
+        [[ -n $DOWNLOADERS_COUNT ]] && command="$command --downloaders-count $DOWNLOADERS_COUNT "
         [[ $INFRA_ONLY == "true" ]] && command="$command --infra-only "
         [[ $PLAN == "true" ]] && command="$command --plan "
         [[ $PUBLIC_RPC == "true" ]] && command="$command --public-rpc "
