@@ -35,6 +35,10 @@ inputs:
   peer:
     description: A peer from the network to bootstrap from. Should be in multiaddr format.
     required: true
+  private-node-count:
+    description: Number of node services to run on each private node VM
+  private-node-vm-count:
+    description: Number of private node VMs to be deployed
   provider:
     description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
     required: true
@@ -71,6 +75,8 @@ runs:
         NETWORK_ROYALTIES_PK: ${{ inputs.network-royalties-pk }}
         PAYMENT_FORWARD_PK: ${{ inputs.payment-forward-pk }}
         PEER: ${{ inputs.peer }}
+        PRIVATE_NODE_COUNT: ${{ inputs.private-node-count }}
+        PRIVATE_NODE_VM_COUNT: ${{ inputs.private-node-vm-count }}
         PROVIDER: ${{ inputs.provider }}
         SAFENODE_FEATURES: ${{ inputs.safenode-features }}
         SAFENODE_VERSION: ${{ inputs.safenode-version }}
@@ -98,6 +104,8 @@ runs:
         [[ -n $NODE_COUNT ]] && command="$command --node-count $NODE_COUNT "
         [[ -n $NODE_VM_COUNT ]] && command="$command --node-vm-count $NODE_VM_COUNT "
         [[ -n $PAYMENT_FORWARD_PK ]] && command="$command --payment-forward-pk $PAYMENT_FORWARD_PK "
+        [[ -n $PRIVATE_NODE_COUNT ]] && command="$command --private-node-count $PRIVATE_NODE_COUNT "
+        [[ -n $PRIVATE_NODE_VM_COUNT ]] && command="$command --private-node-vm-count $PRIVATE_NODE_VM_COUNT "
         [[ -n $SAFENODE_FEATURES ]] && command="$command --safenode-features $SAFENODE_FEATURES "
         [[ -n $SAFENODE_VERSION ]] && command="$command --safenode-version $SAFENODE_VERSION "
         [[ -n $SAFENODE_MANAGER_VERSION ]] && command="$command --safenode-manager-version $SAFENODE_MANAGER_VERSION "
