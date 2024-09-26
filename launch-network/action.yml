@@ -40,15 +40,19 @@ inputs:
     description: Number of node VMs to be deployed
   payment-forward-pk:
     description: Optionally set the payment forward public key for a custom safenode binary.
-  public-rpc:
-    description: Set to make node manager RPC daemons publicly accessible
-    required: true
-    default: false
+  private-node-count:
+    description: Number of node services to run on each private node VM
+  private-node-vm-count:
+    description: Number of private node VMs to be deployed
   protocol-version:
     description: The network protocol version can be set to 'restricted' or any custom version string.
   provider:
     description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
     required: true
+  public-rpc:
+    description: Set to make node manager RPC daemons publicly accessible
+    required: true
+    default: false
   safenode-features:
     description: Comma-separated list of features to be used when building a branch of safenode
   safe-version:
@@ -91,6 +95,8 @@ runs:
         NODE_COUNT: ${{ inputs.node-count }}
         NODE_VM_COUNT: ${{ inputs.node-vm-count }}
         PAYMENT_FORWARD_PK: ${{ inputs.payment-forward-pk }}
+        PRIVATE_NODE_COUNT: ${{ inputs.private-node-count }}
+        PRIVATE_NODE_VM_COUNT: ${{ inputs.private-node-vm-count }}
         PROTOCOL_VERSION: ${{ inputs.protocol-version }}
         PROVIDER: ${{ inputs.provider }}
         PUBLIC_RPC: ${{ inputs.public-rpc }}
@@ -127,6 +133,8 @@ runs:
         [[ -n $NODE_COUNT ]] && command="$command --node-count $NODE_COUNT "
         [[ -n $NODE_VM_COUNT ]] && command="$command --node-vm-count $NODE_VM_COUNT "
         [[ -n $PAYMENT_FORWARD_PK ]] && command="$command --payment-forward-pk $PAYMENT_FORWARD_PK "
+        [[ -n $PRIVATE_NODE_COUNT ]] && command="$command --private-node-count $PRIVATE_NODE_COUNT "
+        [[ -n $PRIVATE_NODE_VM_COUNT ]] && command="$command --private-node-vm-count $PRIVATE_NODE_VM_COUNT "
         [[ -n $PROTOCOL_VERSION ]] && command="$command --protocol-version $PROTOCOL_VERSION "
         [[ $PUBLIC_RPC == "true" ]] && command="$command --public-rpc "
         [[ -n $SAFENODE_FEATURES ]] && command="$command --safenode-features $SAFENODE_FEATURES "

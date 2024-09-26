@@ -20,13 +20,17 @@ inputs:
   plan:
     description: Run a plan for the operation without performing it
     default: false
+  private-node-count:
+    description: Number of node services to run on each private node VM
+  private-node-vm-count:
+    description: Number of private node VMs to be deployed
+  provider:
+    description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
+    required: true
   public-rpc:
     description: Set to make node manager RPC daemons publicly accessible
     required: true
     default: false
-  provider:
-    description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
-    required: true
   rust-log:
     description: Set RUST_LOG to this value for testnet-deploy
     required: false
@@ -43,6 +47,8 @@ runs:
         DESIRED_BOOTSTRAP_NODE_VM_COUNT: ${{ inputs.bootstrap-node-vm-count }}
         DESIRED_NODE_COUNT: ${{ inputs.node-count }}
         DESIRED_NODE_VM_COUNT: ${{ inputs.node-vm-count }}
+        DESIRED_PRIVATE_NODE_COUNT: ${{ inputs.private-node-count }}
+        DESIRED_PRIVATE_NODE_VM_COUNT: ${{ inputs.private-node-vm-count }}
         DESIRED_UPLOADER_VM_COUNT: ${{ inputs.uploader-vm-count }}
         INFRA_ONLY: ${{ inputs.infra-only }}
         NETWORK_NAME: ${{ inputs.network-name }}
@@ -63,6 +69,8 @@ runs:
         [[ -n $DESIRED_BOOTSTRAP_NODE_VM_COUNT ]] && command="$command --desired-bootstrap-node-vm-count $DESIRED_BOOTSTRAP_NODE_VM_COUNT "
         [[ -n $DESIRED_NODE_COUNT ]] && command="$command --desired-node-count $DESIRED_NODE_COUNT "
         [[ -n $DESIRED_NODE_VM_COUNT ]] && command="$command --desired-node-vm-count $DESIRED_NODE_VM_COUNT "
+        [[ -n $DESIRED_PRIVATE_NODE_COUNT ]] && command="$command --desired-private-node-count $DESIRED_PRIVATE_NODE_COUNT "
+        [[ -n $DESIRED_PRIVATE_NODE_VM_COUNT ]] && command="$command --desired-private-node-vm-count $DESIRED_PRIVATE_NODE_VM_COUNT "
         [[ -n $DESIRED_UPLOADER_VM_COUNT ]] && command="$command --desired-uploader-vm-count $DESIRED_UPLOADER_VM_COUNT "
         [[ $INFRA_ONLY == "true" ]] && command="$command --infra-only "
         [[ $PLAN == "true" ]] && command="$command --plan "
