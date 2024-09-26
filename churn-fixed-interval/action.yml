@@ -1,0 +1,47 @@
+name: Fixed Interval Churn
+description: Churn all the nodes in a network at a fixed interval.
+inputs:
+  churn-concurrency:
+    description: The number of nodes to restart concurrently per VM.
+  churn-cycles:
+    description: The number of time each node in the network is restarted.
+  churn-interval:
+    description: The interval between each node churn in seconds.
+  network-name:
+    description: The name of the network
+    required: true
+  provider:
+    description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
+  retain-peer-id:
+    description: Whether to retain the same PeerId on restart.
+  rust-log:
+    description: Set RUST_LOG to this value for testnet-deploy
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: fixed interval churn
+      env: 
+        CHURN_CYCLES: ${{ inputs.churn-cycles }}
+        CHURN_INTERVAL: ${{ inputs.churn-interval }}
+        CONCURRENT_CHURNS: ${{ inputs.churn-concurrency }}
+        NETWORK_NAME: ${{ inputs.network-name }}
+        PROVIDER: ${{ inputs.provider }}
+        RUST_LOG: ${{ inputs.rust-log }}
+        RETAIN_PEER_ID: ${{ inputs.retain-peer-id }}
+      shell: bash
+      run: |
+        set -e
+        
+        cd sn-testnet-deploy
+        command="cargo run -- network churn fixed-interval \
+          --name $NETWORK_NAME \
+          --provider $PROVIDER \
+          --interval $CHURN_INTERVAL \
+          --concurrent-churns $CONCURRENT_CHURNS \
+          --churn-cycles $CHURN_CYCLES"
+        [[ $RETAIN_PEER_ID == "true" ]] && command="$command --retain-peer-id"
+        
+        echo "Will run testnet-deploy with: $command"
+        eval $command
