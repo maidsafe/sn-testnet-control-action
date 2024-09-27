@@ -12,6 +12,10 @@ inputs:
     description: Number of node services to run on each bootstrap node VM
   bootstrap-node-vm-count:
     description: Number of bootstrap node VMs to be deployed
+  chunk-size:
+    description: >
+      Specify the chunk size in bytes as a 64-bit integer.
+      Only applies when building a custom branch.
   environment-type:
     description: >
       Possible values are 'development', 'staging' and 'production'. This value determines the sizes
@@ -86,6 +90,7 @@ runs:
         BETA_ENCRYPTION_KEY: ${{ inputs.beta-encryption-key }}
         BOOTSTRAP_NODE_COUNT: ${{ inputs.bootstrap-node-count }}
         BOOTSTRAP_NODE_VM_COUNT: ${{ inputs.bootstrap-node-vm-count }}
+        CHUNK_SIZE: ${{ inputs.chunk-size }}
         DOWNLOADERS_COUNT: ${{ inputs.downloaders-count }}
         ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
         ENVIRONMENT_VARS: ${{ inputs.environment-vars }}
@@ -127,6 +132,7 @@ runs:
         [[ -n $BETA_ENCRYPTION_KEY ]] && command="$command --beta-encryption-key $BETA_ENCRYPTION_KEY "
         [[ -n $BOOTSTRAP_NODE_COUNT ]] && command="$command --bootstrap-node-count $BOOTSTRAP_NODE_COUNT "
         [[ -n $BOOTSTRAP_NODE_VM_COUNT ]] && command="$command --bootstrap-node-vm-count $BOOTSTRAP_NODE_VM_COUNT "
+        [[ -n $CHUNK_SIZE ]] && command="$command --chunk-size $CHUNK_SIZE "
         [[ $DOWNLOADERS_COUNT -gt 0 ]] && command="$command --downloaders-count $DOWNLOADERS_COUNT "
         [[ -n $ENVIRONMENT_VARS ]] && command="$command --env $ENVIRONMENT_VARS "
         [[ -n $FAUCET_VERSION ]] && command="$command --faucet-version $FAUCET_VERSION "
