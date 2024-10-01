@@ -37,6 +37,11 @@ inputs:
   rust-log:
     description: Set RUST_LOG to this value for testnet-deploy
     required: false
+  safe-version:
+    description: >
+      Provide the version of safe to use with any new uploaders.
+      This value must be supplied when `uploader-vm-count` is used.
+    required: false
   uploader-vm-count:
     description: Number of uploader VMs to be deployed
 
@@ -60,6 +65,7 @@ runs:
         PROVIDER: ${{ inputs.provider }}
         PUBLIC_RPC: ${{ inputs.public-rpc }}
         RUST_LOG: ${{ inputs.rust-log }}
+        SAFE_VERSION: ${{ inputs.safe-version }}
       shell: bash
       run: |
         set -e
@@ -80,6 +86,7 @@ runs:
         [[ $INFRA_ONLY == "true" ]] && command="$command --infra-only "
         [[ $PLAN == "true" ]] && command="$command --plan "
         [[ $PUBLIC_RPC == "true" ]] && command="$command --public-rpc "
+        [[ -n $SAFE_VERSION ]] && command="$command --safe-version $SAFE_VERSION "
 
         echo "Will run testnet-deploy with: $command"
         eval $command
