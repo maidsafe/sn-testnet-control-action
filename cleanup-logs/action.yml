@@ -1,0 +1,29 @@
+name: clean up node logs
+description: clean up rotated node logs
+inputs:
+  network-name:
+    description: The name of the network
+    required: true
+  setup-cron: 
+    description: Setup cron job to clean up logs periodically. The action can be run without setting up cron job.
+    type: boolean
+
+
+runs:
+  using: composite
+  steps:
+    - name: start faucet
+      env:
+        NETWORK_NAME: ${{ inputs.network-name }}
+        SETUP_CRON: ${{ inputs.setup-cron }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        command="testnet-deploy logs cleanup \
+          --name $NETWORK_NAME"
+        [[ $SETUP_CRON == "true" ]] && command="$command --setup-cron "
+
+        echo "Will run testnet-deploy with: $command"
+        eval $command
