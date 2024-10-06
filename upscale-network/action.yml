@@ -13,6 +13,10 @@ inputs:
   infra-only:
     description: Only run the terraform part to upscale the machines
     default: false
+  max-log-files:
+    description: Maximum number of log files to keep for each service
+  max-archived-log-files:
+    description: Maximum number of archived log files to keep for each service
   network-name:
     description: The name of the network
     required: true
@@ -60,6 +64,8 @@ runs:
         DESIRED_UPLOADER_VM_COUNT: ${{ inputs.uploader-vm-count }}
         DOWNLOADERS_COUNT: ${{ inputs.downloaders-count }}
         INFRA_ONLY: ${{ inputs.infra-only }}
+        MAX_ARCHIVED_LOG_FILES: ${{ inputs.max-archived-log-files }}
+        MAX_LOG_FILES: ${{ inputs.max-log-files }}
         NETWORK_NAME: ${{ inputs.network-name }}
         PLAN: ${{ inputs.plan }}
         PROVIDER: ${{ inputs.provider }}
@@ -84,6 +90,8 @@ runs:
         [[ -n $DESIRED_UPLOADER_VM_COUNT ]] && command="$command --desired-uploader-vm-count $DESIRED_UPLOADER_VM_COUNT "
         [[ -n $DOWNLOADERS_COUNT ]] && command="$command --downloaders-count $DOWNLOADERS_COUNT "
         [[ $INFRA_ONLY == "true" ]] && command="$command --infra-only "
+        [[ -n $MAX_ARCHIVED_LOG_FILES ]] && command="$command --max-archived-log-files $MAX_ARCHIVED_LOG_FILES "
+        [[ -n $MAX_LOG_FILES ]] && command="$command --max-log-files $MAX_LOG_FILES "
         [[ $PLAN == "true" ]] && command="$command --plan "
         [[ $PUBLIC_RPC == "true" ]] && command="$command --public-rpc "
         [[ -n $SAFE_VERSION ]] && command="$command --safe-version $SAFE_VERSION "
