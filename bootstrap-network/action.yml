@@ -19,6 +19,10 @@ inputs:
     description: Optionally set the genesis public key for a custom safenode binary.
   log-format:
     description: Set the log format for the nodes, can be 'json' or 'default'. Defaults to 'default' if not set.
+  max-log-files:
+    description: Maximum number of log files to keep for each service
+  max-archived-log-files:
+    description: Maximum number of archived log files to keep for each service
   network-contacts-file-name:
     description: Provide a name for the network contacts file
   network-name:
@@ -68,21 +72,23 @@ runs:
         FOUNDATION_PK: ${{ inputs.foundation-pk }}
         GENESIS_PK: ${{ inputs.genesis-pk }}
         LOG_FORMAT: ${{ inputs.log-format }}
+        MAX_ARCHIVED_LOG_FILES: ${{ inputs.max-archived-log-files }}
+        MAX_LOG_FILES: ${{ inputs.max-log-files }}
         NETWORK_CONTACTS_FILE_NAME: ${{ inputs.network-contacts-file-name }}
         NETWORK_NAME: ${{ inputs.network-name }}
+        NETWORK_ROYALTIES_PK: ${{ inputs.network-royalties-pk }}
         NODE_COUNT: ${{ inputs.node-count }}
         NODE_VM_COUNT: ${{ inputs.node-vm-count }}
-        NETWORK_ROYALTIES_PK: ${{ inputs.network-royalties-pk }}
         PAYMENT_FORWARD_PK: ${{ inputs.payment-forward-pk }}
         PEER: ${{ inputs.peer }}
         PRIVATE_NODE_COUNT: ${{ inputs.private-node-count }}
         PRIVATE_NODE_VM_COUNT: ${{ inputs.private-node-vm-count }}
         PROVIDER: ${{ inputs.provider }}
-        SAFENODE_FEATURES: ${{ inputs.safenode-features }}
-        SAFENODE_VERSION: ${{ inputs.safenode-version }}
-        SAFENODE_MANAGER_VERSION: ${{ inputs.safenode-manager-version }}
         SAFE_NETWORK_BRANCH: ${{ inputs.safe-network-branch }}
         SAFE_NETWORK_USER: ${{ inputs.safe-network-user }}
+        SAFENODE_FEATURES: ${{ inputs.safenode-features }}
+        SAFENODE_MANAGER_VERSION: ${{ inputs.safenode-manager-version }}
+        SAFENODE_VERSION: ${{ inputs.safenode-version }}
       shell: bash
       run: |
         set -e
@@ -95,10 +101,12 @@ runs:
           --provider $PROVIDER "
         [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
         [[ $ANSIBLE_VERBOSE == "true" ]] && command="$command --ansible-verbose "
-        [[ -n $FOUNDATION_PK ]] && command="$command --foundation-pk $FOUNDATION_PK "
         [[ -n $ENVIRONMENT_VARS ]] && command="$command --env $ENVIRONMENT_VARS "
+        [[ -n $FOUNDATION_PK ]] && command="$command --foundation-pk $FOUNDATION_PK "
         [[ -n $GENESIS_PK ]] && command="$command --genesis-pk $GENESIS_PK "
         [[ -n $LOG_FORMAT ]] && command="$command --log-format $LOG_FORMAT "
+        [[ -n $MAX_ARCHIVED_LOG_FILES ]] && command="$command --max-archived-log-files $MAX_ARCHIVED_LOG_FILES "
+        [[ -n $MAX_LOG_FILES ]] && command="$command --max-log-files $MAX_LOG_FILES "
         [[ -n $NETWORK_CONTACTS_FILE_NAME ]] && command="$command --network-contacts-file-name $NETWORK_CONTACTS_FILE_NAME "
         [[ -n $NETWORK_ROYALTIES_PK ]] && command="$command --network-royalties-pk $NETWORK_ROYALTIES_PK "
         [[ -n $NODE_COUNT ]] && command="$command --node-count $NODE_COUNT "
@@ -106,11 +114,11 @@ runs:
         [[ -n $PAYMENT_FORWARD_PK ]] && command="$command --payment-forward-pk $PAYMENT_FORWARD_PK "
         [[ -n $PRIVATE_NODE_COUNT ]] && command="$command --private-node-count $PRIVATE_NODE_COUNT "
         [[ -n $PRIVATE_NODE_VM_COUNT ]] && command="$command --private-node-vm-count $PRIVATE_NODE_VM_COUNT "
-        [[ -n $SAFENODE_FEATURES ]] && command="$command --safenode-features $SAFENODE_FEATURES "
-        [[ -n $SAFENODE_VERSION ]] && command="$command --safenode-version $SAFENODE_VERSION "
-        [[ -n $SAFENODE_MANAGER_VERSION ]] && command="$command --safenode-manager-version $SAFENODE_MANAGER_VERSION "
         [[ -n $SAFE_NETWORK_BRANCH ]] && command="$command --branch $SAFE_NETWORK_BRANCH "
         [[ -n $SAFE_NETWORK_USER ]] && command="$command --repo-owner $SAFE_NETWORK_USER "
+        [[ -n $SAFENODE_FEATURES ]] && command="$command --safenode-features $SAFENODE_FEATURES "
+        [[ -n $SAFENODE_MANAGER_VERSION ]] && command="$command --safenode-manager-version $SAFENODE_MANAGER_VERSION "
+        [[ -n $SAFENODE_VERSION ]] && command="$command --safenode-version $SAFENODE_VERSION "
 
         echo "Will run testnet-deploy with: $command"
         eval $command
