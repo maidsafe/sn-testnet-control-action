@@ -1,0 +1,31 @@
+name: Configure Swapfile
+description: Use testnet-deploy to setup a swapfile on nodes and optionally on bootstrap nodes
+inputs:
+  bootstrap:
+    description: Set to true to configure a swapfile on the bootstrap nodes
+    required: false
+  network-name:
+    description: The name of the network
+    required: true
+  size:
+    description: The size of the swapfile in GB
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: start
+      env:
+        BOOTSTRAP: ${{ inputs.bootstrap }}
+        NETWORK_NAME: ${{ inputs.network-name }}
+        SIZE: ${{ inputs.size }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        command="testnet-deploy configure-swapfile --name $NETWORK_NAME --size $SIZE "
+        [[ $BOOTSTRAP == "true" ]] && command="$command --bootstrap "
+
+        echo "Will run testnet-deploy with: $command"
+        eval $command
