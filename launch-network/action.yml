@@ -81,6 +81,8 @@ inputs:
       will use these binaries.
   sn-auditor-version:
     description: Supply a version for the sn-auditor. Otherwise the latest will be used.
+  uploaders-count:
+    description: Number of uploaders to run per VM
   uploader-vm-count:
     description: Number of uploader VMs to be deployed
 
@@ -123,6 +125,7 @@ runs:
         SAFENODE_MANAGER_VERSION: ${{ inputs.safenode-manager-version }}
         SAFENODE_VERSION: ${{ inputs.safenode-version }}
         SN_AUDITOR_VERSION: ${{ inputs.sn-auditor-version }}
+        UPLOADERS_COUNT: ${{ inputs.uploaders-count }}
         UPLOADER_VM_COUNT: ${{ inputs.uploader-vm-count }}
       shell: bash
       run: |
@@ -158,11 +161,12 @@ runs:
         [[ $PUBLIC_RPC == "true" ]] && command="$command --public-rpc "
         [[ -n $SAFE_NETWORK_BRANCH ]] && command="$command --branch $SAFE_NETWORK_BRANCH "
         [[ -n $SAFE_NETWORK_USER ]] && command="$command --repo-owner $SAFE_NETWORK_USER "
-        [[ -n $SAFE_VERSION ]] && command="$command --safe-version $SAFE_VERSION "
         [[ -n $SAFENODE_FEATURES ]] && command="$command --safenode-features $SAFENODE_FEATURES "
+        [[ -n $SAFE_VERSION ]] && command="$command --safe-version $SAFE_VERSION "
         [[ -n $SAFENODE_MANAGER_VERSION ]] && command="$command --safenode-manager-version $SAFENODE_MANAGER_VERSION "
         [[ -n $SAFENODE_VERSION ]] && command="$command --safenode-version $SAFENODE_VERSION "
         [[ -n $SN_AUDITOR_VERSION ]] && command="$command --sn-auditor-version $SN_AUDITOR_VERSION "
+        [[ -n $UPLOADER_COUNT ]] && command="$command --uploaders-count $UPLOADER_COUNT "
         [[ -n $UPLOADER_VM_COUNT ]] && command="$command --uploader-vm-count $UPLOADER_VM_COUNT "
 
         echo "Will run testnet-deploy with: $command"

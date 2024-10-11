@@ -46,6 +46,8 @@ inputs:
       Provide the version of safe to use with any new uploaders.
       This value must be supplied when `uploader-vm-count` is used.
     required: false
+  uploaders-count:
+    description: Number of uploaders to run per VM
   uploader-vm-count:
     description: Number of uploader VMs to be deployed
 
@@ -61,6 +63,7 @@ runs:
         DESIRED_NODE_VM_COUNT: ${{ inputs.node-vm-count }}
         DESIRED_PRIVATE_NODE_COUNT: ${{ inputs.private-node-count }}
         DESIRED_PRIVATE_NODE_VM_COUNT: ${{ inputs.private-node-vm-count }}
+        DESIRED_UPLOADERS_COUNT: ${{ inputs.uploaders-count }}
         DESIRED_UPLOADER_VM_COUNT: ${{ inputs.uploader-vm-count }}
         DOWNLOADERS_COUNT: ${{ inputs.downloaders-count }}
         INFRA_ONLY: ${{ inputs.infra-only }}
@@ -87,6 +90,7 @@ runs:
         [[ -n $DESIRED_NODE_VM_COUNT ]] && command="$command --desired-node-vm-count $DESIRED_NODE_VM_COUNT "
         [[ -n $DESIRED_PRIVATE_NODE_COUNT ]] && command="$command --desired-private-node-count $DESIRED_PRIVATE_NODE_COUNT "
         [[ -n $DESIRED_PRIVATE_NODE_VM_COUNT ]] && command="$command --desired-private-node-vm-count $DESIRED_PRIVATE_NODE_VM_COUNT "
+        [[ -n $DESIRED_UPLOADERS_COUNT ]] && command="$command --desired-uploaders-count $DESIRED_UPLOADERS_COUNT "
         [[ -n $DESIRED_UPLOADER_VM_COUNT ]] && command="$command --desired-uploader-vm-count $DESIRED_UPLOADER_VM_COUNT "
         [[ -n $DOWNLOADERS_COUNT ]] && command="$command --downloaders-count $DOWNLOADERS_COUNT "
         [[ $INFRA_ONLY == "true" ]] && command="$command --infra-only "
