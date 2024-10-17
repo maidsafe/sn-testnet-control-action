@@ -6,8 +6,6 @@ inputs:
   ansible-verbose:
     description: Set to use verbose output for Ansible
     default: false
-  beta-encryption-key:
-    description: Supply an encryption key that will be used with the auditor.
   bootstrap-node-count:
     description: Number of node services to run on each bootstrap node VM
   bootstrap-node-vm-count:
@@ -30,8 +28,6 @@ inputs:
     description: >
       The type of EVM network to use. Possible values are 'evm-arbitrum-one', 'evm-arbitrum-sepolia', or 'evm-custom'.
     default: 'evm-arbitrum-one'
-  faucet-version:
-    description: Supply a version for the faucet. Otherwise the latest will be used.
   foundation-pk:
     description: Optionally set the foundation public key for a custom safenode binary.
   genesis-pk:
@@ -86,8 +82,6 @@ inputs:
     description: >
       Build binaries from the safe_network repository owned by this org or username. The testnet
       will use these binaries.
-  sn-auditor-version:
-    description: Supply a version for the sn-auditor. Otherwise the latest will be used.
   uploaders-count:
     description: Number of uploaders to run per VM
   uploader-vm-count:
@@ -112,7 +106,6 @@ runs:
         ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
         ENVIRONMENT_VARS: ${{ inputs.environment-vars }}
         EVM_NETWORK_TYPE: ${{ inputs.evm-network-type }}
-        FAUCET_VERSION: ${{ inputs.faucet-version }}
         FOUNDATION_PK: ${{ inputs.foundation-pk }}
         GENESIS_PK: ${{ inputs.genesis-pk }}
         LOG_FORMAT: ${{ inputs.log-format }}
@@ -137,7 +130,6 @@ runs:
         SAFENODE_FEATURES: ${{ inputs.safenode-features }}
         SAFENODE_MANAGER_VERSION: ${{ inputs.safenode-manager-version }}
         SAFENODE_VERSION: ${{ inputs.safenode-version }}
-        SN_AUDITOR_VERSION: ${{ inputs.sn-auditor-version }}
         UPLOADERS_COUNT: ${{ inputs.uploaders-count }}
         UPLOADER_VM_COUNT: ${{ inputs.uploader-vm-count }}
         WALLET_SECRET_KEY: ${{ inputs.wallet-secret-key }}
@@ -152,14 +144,12 @@ runs:
           --provider $PROVIDER "
         [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
         [[ $ANSIBLE_VERBOSE == "true" ]] && command="$command --ansible-verbose "
-        [[ -n $BETA_ENCRYPTION_KEY ]] && command="$command --beta-encryption-key $BETA_ENCRYPTION_KEY "
         [[ -n $BOOTSTRAP_NODE_COUNT ]] && command="$command --bootstrap-node-count $BOOTSTRAP_NODE_COUNT "
         [[ -n $BOOTSTRAP_NODE_VM_COUNT ]] && command="$command --bootstrap-node-vm-count $BOOTSTRAP_NODE_VM_COUNT "
         [[ -n $CHUNK_SIZE ]] && command="$command --chunk-size $CHUNK_SIZE "
         [[ $DOWNLOADERS_COUNT -gt 0 ]] && command="$command --downloaders-count $DOWNLOADERS_COUNT "
         [[ -n $ENVIRONMENT_VARS ]] && command="$command --env $ENVIRONMENT_VARS "
         [[ -n $EVM_NETWORK_TYPE ]] && command="$command --evm-network-type $EVM_NETWORK_TYPE "
-        [[ -n $FAUCET_VERSION ]] && command="$command --faucet-version $FAUCET_VERSION "
         [[ -n $FOUNDATION_PK ]] && command="$command --foundation-pk $FOUNDATION_PK "
         [[ -n $GENESIS_PK ]] && command="$command --genesis-pk $GENESIS_PK "
         [[ -n $LOG_FORMAT ]] && command="$command --log-format $LOG_FORMAT "
@@ -181,8 +171,7 @@ runs:
         [[ -n $SAFE_VERSION ]] && command="$command --safe-version $SAFE_VERSION "
         [[ -n $SAFENODE_MANAGER_VERSION ]] && command="$command --safenode-manager-version $SAFENODE_MANAGER_VERSION "
         [[ -n $SAFENODE_VERSION ]] && command="$command --safenode-version $SAFENODE_VERSION "
-        [[ -n $SN_AUDITOR_VERSION ]] && command="$command --sn-auditor-version $SN_AUDITOR_VERSION "
-        [[ -n $UPLOADER_COUNT ]] && command="$command --uploaders-count $UPLOADER_COUNT "
+        [[ -n $UPLOADERS_COUNT ]] && command="$command --uploaders-count $UPLOADERS_COUNT "
         [[ -n $UPLOADER_VM_COUNT ]] && command="$command --uploader-vm-count $UPLOADER_VM_COUNT "
         [[ -n $WALLET_SECRET_KEY ]] && command="$command --wallet-secret-key $WALLET_SECRET_KEY "
 
