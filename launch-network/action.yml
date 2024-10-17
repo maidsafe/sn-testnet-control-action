@@ -26,6 +26,10 @@ inputs:
     default: '0'
   environment-vars:
     description: Pass a comma-separated list of environment variables to safenode services
+  evm-network-type:
+    description: >
+      The type of EVM network to use. Possible values are 'evm-arbitrum-one', 'evm-arbitrum-sepolia', or 'evm-custom'.
+    default: 'evm-arbitrum-one'
   faucet-version:
     description: Supply a version for the faucet. Otherwise the latest will be used.
   foundation-pk:
@@ -64,6 +68,9 @@ inputs:
     description: Set to make node manager RPC daemons publicly accessible
     required: true
     default: false
+  rewards-address:
+    description: The rewards address for each safenode service.
+    required: true
   safenode-features:
     description: Comma-separated list of features to be used when building a branch of safenode
   safe-version:
@@ -85,6 +92,10 @@ inputs:
     description: Number of uploaders to run per VM
   uploader-vm-count:
     description: Number of uploader VMs to be deployed
+  wallet-secret-key:
+      description: >
+        A wallet secret key for the uploaders.
+        It only applies when Arbitrum One or Sepolia networks are used.
 
 runs:
   using: composite
@@ -100,6 +111,7 @@ runs:
         DOWNLOADERS_COUNT: ${{ inputs.downloaders-count }}
         ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
         ENVIRONMENT_VARS: ${{ inputs.environment-vars }}
+        EVM_NETWORK_TYPE: ${{ inputs.evm-network-type }}
         FAUCET_VERSION: ${{ inputs.faucet-version }}
         FOUNDATION_PK: ${{ inputs.foundation-pk }}
         GENESIS_PK: ${{ inputs.genesis-pk }}
@@ -118,6 +130,7 @@ runs:
         PROVIDER: ${{ inputs.provider }}
         PUBLIC_RPC: ${{ inputs.public-rpc }}
         RUST_LOG: ${{ inputs.rust-log }}
+        REWARDS_ADDRESS: ${{ inputs.rewards-address }}
         SAFE_NETWORK_BRANCH: ${{ inputs.safe-network-branch }}
         SAFE_NETWORK_USER: ${{ inputs.safe-network-user }}
         SAFE_VERSION: ${{ inputs.safe-version }}
@@ -127,6 +140,7 @@ runs:
         SN_AUDITOR_VERSION: ${{ inputs.sn-auditor-version }}
         UPLOADERS_COUNT: ${{ inputs.uploaders-count }}
         UPLOADER_VM_COUNT: ${{ inputs.uploader-vm-count }}
+        WALLET_SECRET_KEY: ${{ inputs.wallet-secret-key }}
       shell: bash
       run: |
         set -e
@@ -144,6 +158,7 @@ runs:
         [[ -n $CHUNK_SIZE ]] && command="$command --chunk-size $CHUNK_SIZE "
         [[ $DOWNLOADERS_COUNT -gt 0 ]] && command="$command --downloaders-count $DOWNLOADERS_COUNT "
         [[ -n $ENVIRONMENT_VARS ]] && command="$command --env $ENVIRONMENT_VARS "
+        [[ -n $EVM_NETWORK_TYPE ]] && command="$command --evm-network-type $EVM_NETWORK_TYPE "
         [[ -n $FAUCET_VERSION ]] && command="$command --faucet-version $FAUCET_VERSION "
         [[ -n $FOUNDATION_PK ]] && command="$command --foundation-pk $FOUNDATION_PK "
         [[ -n $GENESIS_PK ]] && command="$command --genesis-pk $GENESIS_PK "
@@ -159,6 +174,7 @@ runs:
         [[ -n $PRIVATE_NODE_VM_COUNT ]] && command="$command --private-node-vm-count $PRIVATE_NODE_VM_COUNT "
         [[ -n $PROTOCOL_VERSION ]] && command="$command --protocol-version $PROTOCOL_VERSION "
         [[ $PUBLIC_RPC == "true" ]] && command="$command --public-rpc "
+        [[ -n $REWARDS_ADDRESS ]] && command="$command --rewards-address $REWARDS_ADDRESS "
         [[ -n $SAFE_NETWORK_BRANCH ]] && command="$command --branch $SAFE_NETWORK_BRANCH "
         [[ -n $SAFE_NETWORK_USER ]] && command="$command --repo-owner $SAFE_NETWORK_USER "
         [[ -n $SAFENODE_FEATURES ]] && command="$command --safenode-features $SAFENODE_FEATURES "
@@ -168,6 +184,7 @@ runs:
         [[ -n $SN_AUDITOR_VERSION ]] && command="$command --sn-auditor-version $SN_AUDITOR_VERSION "
         [[ -n $UPLOADER_COUNT ]] && command="$command --uploaders-count $UPLOADER_COUNT "
         [[ -n $UPLOADER_VM_COUNT ]] && command="$command --uploader-vm-count $UPLOADER_VM_COUNT "
+        [[ -n $WALLET_SECRET_KEY ]] && command="$command --wallet-secret-key $WALLET_SECRET_KEY "
 
         echo "Will run testnet-deploy with: $command"
         eval $command
