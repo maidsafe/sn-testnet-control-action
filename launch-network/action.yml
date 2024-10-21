@@ -28,8 +28,8 @@ inputs:
     description: Pass a comma-separated list of environment variables to safenode services
   evm-network-type:
     description: >
-      The type of EVM network to use. Possible values are 'evm-arbitrum-one', 'evm-arbitrum-sepolia', or 'evm-custom'.
-    default: 'evm-arbitrum-one'
+      The type of EVM network to use. Possible values are 'arbitrum-one', 'arbitrum-sepolia', or 'custom'.
+    default: 'arbitrum-one'
   evm-node-vm-size:
     description: The size of the EVM node VMs
   foundation-pk:
@@ -188,7 +188,7 @@ runs:
         [[ -n $UPLOADER_VM_COUNT ]] && command="$command --uploader-vm-count $UPLOADER_VM_COUNT "
         [[ -n $UPLOADER_VM_SIZE ]] && command="$command --uploader-vm-size $UPLOADER_VM_SIZE "
         [[ -n $UPLOADERS_COUNT ]] && command="$command --uploaders-count $UPLOADERS_COUNT "
-        [[ -n $WALLET_SECRET_KEY ]] && command="$command --wallet-secret-key $WALLET_SECRET_KEY "
+        [[ -n $WALLET_SECRET_KEY && $EVM_NETWORK_TYPE != "custom" ]] && command="$command --funding-wallet-secret-key $WALLET_SECRET_KEY "
 
         echo "Will run testnet-deploy with: $command"
         eval $command
@@ -201,4 +201,3 @@ runs:
         genesis_multiaddr=$(jq -r '.genesis_multiaddr' $inventory_path)
         echo "SAFE_PEERS=$genesis_multiaddr" >> $GITHUB_ENV
         echo "SN_INVENTORY=$inventory_path" >> $GITHUB_ENV
-
