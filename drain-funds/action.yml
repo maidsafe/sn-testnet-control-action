@@ -1,0 +1,34 @@
+name: Drain Funds
+description: Drain all the tokens and gas from the uploaders to the funding wallet.
+inputs:
+  network-name:
+    description: The name of the network
+    required: true
+  provider:
+    description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
+    required: true
+  to-address:
+    description: >
+      The address of the wallet that will receive all the tokens and gas. This argument is optional,
+      the funding wallet address from the S3 environment file will be used by default.
+
+runs:
+  using: composite
+  steps:
+    - name: Drain Funds
+      env:
+        NETWORK_NAME: ${{ inputs.network-name }}
+        PROVIDER: ${{ inputs.provider }}
+        TO_ADDRESS: ${{ inputs.to-address }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        command="testnet-deploy funds drain \
+          --name $NETWORK_NAME \
+          --provider $PROVIDER "
+        [[ -n $TO_ADDRESS ]] && command="$command --to-address $TO_ADDRESS "
+
+        echo "Will run testnet-deploy with: $command"
+        eval $command

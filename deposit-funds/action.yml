@@ -1,0 +1,40 @@
+name: Deposit Funds
+description: Deposit tokens and gas from the provided funding wallet secret key to all the uploaders
+inputs:
+  network-name:
+    description: The name of the network
+    required: true
+  provider:
+    description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
+    required: true
+  funding-wallet-secret-key:
+    description: The secret key for the wallet that will fund all the uploaders. This argument only applies when Arbitrum or Sepolia networks are used.
+  gas-to-transfer:
+    description: The number of gas to transfer, in U256. 1 ETH = 1_000_000_000_000_000_000. Defaults to 0.1 ETH
+  tokens-to-transfer:
+    description: The number of tokens to transfer, in U256. 1 Token = 1_000_000_000_000_000_000. Defaults to 1 token.
+
+runs:
+  using: composite
+  steps:
+    - name: Deposit Funds
+      env:
+        NETWORK_NAME: ${{ inputs.network-name }}
+        PROVIDER: ${{ inputs.provider }}
+        FUNDING_WALLET_SECRET_KEY: ${{ inputs.funding-wallet-secret-key }}
+        GAS_TO_TRANSFER: ${{ inputs.gas-to-transfer }}
+        TOKENS_TO_TRANSFER: ${{ inputs.tokens-to-transfer }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        command="testnet-deploy funds deposit \
+          --name $NETWORK_NAME \
+          --provider $PROVIDER "
+        [[ -n $FUNDING_WALLET_SECRET_KEY ]] && command="$command --funding-wallet-secret-key $FUNDING_WALLET_SECRET_KEY "
+        [[ -n $GAS_TO_TRANSFER ]] && command="$command --gas-to-transfer $GAS_TO_TRANSFER "
+        [[ -n $TOKENS_TO_TRANSFER ]] && command="$command --tokens-to-transfer $TOKENS_TO_TRANSFER"
+
+        echo "Will run testnet-deploy with: $command"
+        eval $command
