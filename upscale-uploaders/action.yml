@@ -1,0 +1,66 @@
+name: Upscale Uploaders
+description: Upscale the uploaders on the network
+inputs:
+  autonomi-version:
+    description: >
+      Provide the version of autonomi to use with any new uploaders.
+      This value must be supplied when `uploader-vm-count` is used.
+    required: false
+  desired-uploaders-count:
+    description: Number of uploaders to run per VM
+  desired-uploader-vm-count:
+    description: Number of uploader VMs to be deployed
+  downloaders-count:
+    description: Number of downloader services to run
+    default: '0'
+  funding-wallet-secret-key:
+    description: The secret key of the funding wallet
+  gas-amount:
+    description: The amount of gas to be used by each uploader
+  infra-only:
+    description: Only run the terraform part to upscale the machines
+    default: false
+  network-name:
+    description: The name of the network
+    required: true
+  plan:
+    description: Run a plan for the operation without performing it
+    default: false
+  provider:
+    description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: upscale uploaders
+      env:
+        AUTONOMI_VERSION: ${{ inputs.autonomi-version }}
+        DESIRED_UPLOADERS_COUNT: ${{ inputs.desired-uploaders-count }}
+        DESIRED_UPLOADER_VM_COUNT: ${{ inputs.desired-uploader-vm-count }}
+        DOWNLOADERS_COUNT: ${{ inputs.downloaders-count }}
+        FUNDING_WALLET_SECRET_KEY: ${{ inputs.funding-wallet-secret-key }}
+        GAS_AMOUNT: ${{ inputs.gas-amount }}
+        INFRA_ONLY: ${{ inputs.infra-only }}
+        NETWORK_NAME: ${{ inputs.network-name }}
+        PLAN: ${{ inputs.plan }}
+        PROVIDER: ${{ inputs.provider }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        command="testnet-deploy uploaders upscale \
+          --name $NETWORK_NAME \
+          --provider $PROVIDER "
+        [[ -n $DESIRED_UPLOADERS_COUNT ]] && command="$command --desired-uploaders-count $DESIRED_UPLOADERS_COUNT "
+        [[ -n $DESIRED_UPLOADER_VM_COUNT ]] && command="$command --desired-uploader-vm-count $DESIRED_UPLOADER_VM_COUNT "
+        [[ -n $DOWNLOADERS_COUNT ]] && command="$command --downloaders-count $DOWNLOADERS_COUNT "
+        [[ -n $FUNDING_WALLET_SECRET_KEY ]] && command="$command --funding-wallet-secret-key $FUNDING_WALLET_SECRET_KEY "
+        [[ -n $GAS_AMOUNT ]] && command="$command --gas-amount $GAS_AMOUNT "
+        [[ $INFRA_ONLY == "true" ]] && command="$command --infra-only "
+        [[ $PLAN == "true" ]] && command="$command --plan "
+        [[ -n $AUTONOMI_VERSION ]] && command="$command --autonomi-version $AUTONOMI_VERSION "
+
+        echo "Will run testnet-deploy with: $command"
+        eval $command
