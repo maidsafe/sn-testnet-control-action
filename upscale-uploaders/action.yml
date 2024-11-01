@@ -29,6 +29,9 @@ inputs:
   provider:
     description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
     required: true
+  provision-only:
+    description: Only run the Ansible provision and not the Terraform run
+    default: false
 
 runs:
   using: composite
@@ -45,6 +48,7 @@ runs:
         NETWORK_NAME: ${{ inputs.network-name }}
         PLAN: ${{ inputs.plan }}
         PROVIDER: ${{ inputs.provider }}
+        PROVISION_ONLY: ${{ inputs.provision-only }}
       shell: bash
       run: |
         set -e
@@ -53,6 +57,7 @@ runs:
         command="testnet-deploy uploaders upscale \
           --name $NETWORK_NAME \
           --provider $PROVIDER "
+        [[ -n $AUTONOMI_VERSION ]] && command="$command --autonomi-version $AUTONOMI_VERSION "
         [[ -n $DESIRED_UPLOADERS_COUNT ]] && command="$command --desired-uploaders-count $DESIRED_UPLOADERS_COUNT "
         [[ -n $DESIRED_UPLOADER_VM_COUNT ]] && command="$command --desired-uploader-vm-count $DESIRED_UPLOADER_VM_COUNT "
         [[ -n $DOWNLOADERS_COUNT ]] && command="$command --downloaders-count $DOWNLOADERS_COUNT "
@@ -60,7 +65,7 @@ runs:
         [[ -n $GAS_AMOUNT ]] && command="$command --gas-amount $GAS_AMOUNT "
         [[ $INFRA_ONLY == "true" ]] && command="$command --infra-only "
         [[ $PLAN == "true" ]] && command="$command --plan "
-        [[ -n $AUTONOMI_VERSION ]] && command="$command --autonomi-version $AUTONOMI_VERSION "
+        [[ $PROVISION_ONLY == "true" ]] && command="$command --provision-only "
 
         echo "Will run testnet-deploy with: $command"
         eval $command
