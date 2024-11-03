@@ -6,7 +6,7 @@ inputs:
     required: true
   version:
     description: >
-      The version of safe to use. If not supplied, the latest stable version will be used.
+      The version of autonomi to use. If not supplied, the latest stable version will be used.
 
 runs:
   using: composite
@@ -19,4 +19,8 @@ runs:
         set -e
 
         cd sn-testnet-deploy
-        testnet-deploy uploaders upgrade --name $NETWORK_NAME
+        command="testnet-deploy uploaders upgrade --name $NETWORK_NAME "
+        [[ -n $VERSION ]] && command="$command --version $VERSION "
+
+        echo "Will run testnet-deploy with: $command"
+        eval $command
