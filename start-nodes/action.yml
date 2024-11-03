@@ -3,6 +3,8 @@ description: Use testnet-deploy to start all nodes for a deployment
 inputs:
   ansible-forks:
     description: The number of forks, or parallel connections, to use with Ansible. Defaults to 50.
+  interval:
+    description: An interval to be applied between starting the nodes. Value is in milliseconds.
   network-name:
     description: The name of the network
     required: true
@@ -13,6 +15,7 @@ runs:
     - name: start
       env:
         ANSIBLE_FORKS: ${{ inputs.ansible-forks }}
+        INTERVAL: ${{ inputs.interval }}
         NETWORK_NAME: ${{ inputs.network-name }}
       shell: bash
       run: |
@@ -21,6 +24,7 @@ runs:
         cd sn-testnet-deploy
         command="testnet-deploy start --name $NETWORK_NAME "
         [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
+        [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
 
         echo "Will run testnet-deploy with: $command"
         eval $command
