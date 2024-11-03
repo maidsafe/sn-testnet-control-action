@@ -16,7 +16,7 @@ inputs:
   network-name:
     description: The name of the network to upgrade
     required: true
-  safenode-version:
+  version:
     description: >
       The safenode version to upgrade to. If not supplied, `testnet-deploy` will use the latest
       version.
@@ -32,7 +32,7 @@ runs:
         CUSTOM_INVENTORY: ${{ inputs.custom-inventory }}
         INTERVAL: ${{ inputs.interval }}
         NETWORK_NAME: ${{ inputs.network-name }}
-        SAFENODE_VERSION: ${{ inputs.safenode-version }}
+        VERSION: ${{ inputs.version }}
       shell: bash
       run: |
         set -e
@@ -42,7 +42,7 @@ runs:
         [[ $ANSIBLE_VERBOSE == "true" ]] && command="$command --ansible-verbose "
         [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
         [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
-        [[ -n $SAFENODE_VERSION ]] && command="$command --safenode-version $SAFENODE_VERSION "
+        [[ -n $VERSION ]] && command="$command --version $VERSION "
 
         if [[ -n $CUSTOM_INVENTORY ]]; then
           IFS=',' read -ra VM_NAMES <<< "$CUSTOM_INVENTORY"
