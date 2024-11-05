@@ -31,6 +31,8 @@ inputs:
     description: Optionally set the foundation public key for a custom safenode binary.
   genesis-pk:
     description: Optionally set the genesis public key for a custom safenode binary.
+  interval:
+    description: The interval to apply between each node startup. Units are ms. The default is 200.
   log-format:
     description: Set the log format for the nodes, can be 'json' or 'default'. Defaults to 'default' if not set.
   max-archived-log-files:
@@ -76,7 +78,7 @@ inputs:
   safenode-manager-version:
     description: Supply a version for safenode-manager. Otherwise the latest will be used.
   safenode-version:
-    description: Supply a version for safenode. Otherwise the latest will be used.</edit>
+    description: Supply a version for safenode. Otherwise the latest will be used.
 
 runs:
   using: composite
@@ -95,6 +97,7 @@ runs:
         EVM_RPC_URL: ${{ inputs.evm-rpc-url }}
         FOUNDATION_PK: ${{ inputs.foundation-pk }}
         GENESIS_PK: ${{ inputs.genesis-pk }}
+        INTERVAL: ${{ inputs.interval }}
         LOG_FORMAT: ${{ inputs.log-format }}
         MAX_ARCHIVED_LOG_FILES: ${{ inputs.max-archived-log-files }}
         MAX_LOG_FILES: ${{ inputs.max-log-files }}
@@ -136,6 +139,7 @@ runs:
         [[ -n $EVM_RPC_URL ]] && command="$command --evm-rpc-url $EVM_RPC_URL "
         [[ -n $FOUNDATION_PK ]] && command="$command --foundation-pk $FOUNDATION_PK "
         [[ -n $GENESIS_PK ]] && command="$command --genesis-pk $GENESIS_PK "
+        [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
         [[ -n $LOG_FORMAT ]] && command="$command --log-format $LOG_FORMAT "
         [[ -n $MAX_ARCHIVED_LOG_FILES ]] && command="$command --max-archived-log-files $MAX_ARCHIVED_LOG_FILES "
         [[ -n $MAX_LOG_FILES ]] && command="$command --max-log-files $MAX_LOG_FILES "

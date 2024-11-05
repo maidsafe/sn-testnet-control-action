@@ -18,6 +18,8 @@ inputs:
   infra-only:
     description: Only run the terraform part to upscale the machines
     default: false
+  interval:
+    description: The interval to apply between each node upgrade. Units are ms. The default is 200.
   max-log-files:
     description: Maximum number of log files to keep for each service
   max-archived-log-files:
@@ -68,6 +70,7 @@ runs:
         DESIRED_UPLOADER_VM_COUNT: ${{ inputs.uploader-vm-count }}
         DOWNLOADERS_COUNT: ${{ inputs.downloaders-count }}
         INFRA_ONLY: ${{ inputs.infra-only }}
+        INTERVAL: ${{ inputs.interval }}
         MAX_ARCHIVED_LOG_FILES: ${{ inputs.max-archived-log-files }}
         MAX_LOG_FILES: ${{ inputs.max-log-files }}
         NETWORK_NAME: ${{ inputs.network-name }}
@@ -94,6 +97,7 @@ runs:
         [[ -n $DESIRED_UPLOADER_VM_COUNT ]] && command="$command --desired-uploader-vm-count $DESIRED_UPLOADER_VM_COUNT "
         [[ -n $DOWNLOADERS_COUNT ]] && command="$command --downloaders-count $DOWNLOADERS_COUNT "
         [[ $INFRA_ONLY == "true" ]] && command="$command --infra-only "
+        [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
         [[ -n $MAX_ARCHIVED_LOG_FILES ]] && command="$command --max-archived-log-files $MAX_ARCHIVED_LOG_FILES "
         [[ -n $MAX_LOG_FILES ]] && command="$command --max-log-files $MAX_LOG_FILES "
         [[ $PLAN == "true" ]] && command="$command --plan "
