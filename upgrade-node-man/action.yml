@@ -4,10 +4,15 @@ inputs:
   custom-inventory:
     description: >
       Run the upgrade against particular VMs in the environment.
-      Should be a comma-separated list.
+      Should be a comma-separated list. Cannot be used with the node-type input.
   network-name:
     description: The name of the network to upgrade
     required: true
+  node-type:
+    description: >
+      Specify the type of node VM to upgrade the node manager on. If not provided, the node manager on
+      all the node VMs will be upgraded. Valid values are "bootstrap", "genesis", "generic" and "private".
+      Cannot be used with the custom-inventory input.
   version:
     description: The safenode-manager version to upgrade to
 
@@ -18,14 +23,16 @@ runs:
       env:
         CUSTOM_INVENTORY: ${{ inputs.custom-inventory }}
         NETWORK_NAME: ${{ inputs.network-name }}
-        SAFENODE_MANAGER_VERSION: ${{ inputs.version }}
+        NODE_TYPE: ${{ inputs.node-type }}
+        VERSION: ${{ inputs.version }}
       shell: bash
       run: |
         set -e
 
         cd sn-testnet-deploy
         command="testnet-deploy upgrade-node-manager --name $NETWORK_NAME "
-        [[ -n $SAFENODE_MANAGER_VERSION ]] && command="$command --version $SAFENODE_MANAGER_VERSION "
+        [[ -n $VERSION ]] && command="$command --version $VERSION "
+        [[ -n $NODE_TYPE ]] && command="$command --node-type $NODE_TYPE "
 
         if [[ -n $CUSTOM_INVENTORY ]]; then
           IFS=',' read -ra VM_NAMES <<< "$CUSTOM_INVENTORY"

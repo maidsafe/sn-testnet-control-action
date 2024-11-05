@@ -1,28 +1,32 @@
-name: Stop Telegraf
-description: Use testnet-deploy to stop the Telegraf service on all VMs
+name: Stop Nodes
+description: Use testnet-deploy to stop all nodes for a deployment
 inputs:
   ansible-forks:
     description: The number of forks, or parallel connections, to use with Ansible. Defaults to 50.
   custom-inventory:
     description: >
-      Run the start telegraf playbook against particular VMs in the environment.
-      Should be a comma-separated list. Cannot be used with the node-type input.
+      Run the stop node playbook against particular VMs in the environment.
+      Should be a comma-separated list.
+      Cannot be used with the node-type input.
+  interval:
+    description: An interval to be applied between stopping the nodes. Value is in milliseconds.
   network-name:
     description: The name of the network
     required: true
   node-type:
     description: >
-      Specify the type of node VM to stop the telegraf services on. If not provided, the telegraf services on
+      Specify the type of node VM to stop the safenode services on. If not provided, the safenode services on
       all the node VMs will be stopped. Valid values are "bootstrap", "genesis", "generic" and "private".
       Cannot be used with the custom-inventory input.
 
 runs:
   using: composite
   steps:
-    - name: stop telegraf
+    - name: stop
       env:
         ANSIBLE_FORKS: ${{ inputs.ansible-forks }}
         CUSTOM_INVENTORY: ${{ inputs.custom-inventory }}
+        INTERVAL: ${{ inputs.interval }}
         NETWORK_NAME: ${{ inputs.network-name }}
         NODE_TYPE: ${{ inputs.node-type }}
       shell: bash
@@ -30,8 +34,9 @@ runs:
         set -e
 
         cd sn-testnet-deploy
-        command="testnet-deploy stop-telegraf --name $NETWORK_NAME "
+        command="testnet-deploy stop --name $NETWORK_NAME "
         [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
+        [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
         [[ -n $NODE_TYPE ]] && command="$command --node-type $NODE_TYPE "
 
         if [[ -n $CUSTOM_INVENTORY ]]; then
