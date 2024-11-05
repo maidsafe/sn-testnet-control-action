@@ -7,9 +7,15 @@ inputs:
     description: >
       Run the start telegraf playbook against particular VMs in the environment.
       Should be a comma-separated list.
+      Cannot be used with the node-type input.
   network-name:
     description: The name of the network
     required: true
+  node-type:
+    description: >
+      Specify the type of node VM to start the telegraf services on. If not provided, the telegraf services on
+      all the node VMs will be started. Valid values are "bootstrap", "genesis", "generic" and "private".
+      Cannot be used with the custom-inventory input.
 
 runs:
   using: composite
@@ -19,6 +25,7 @@ runs:
         ANSIBLE_FORKS: ${{ inputs.ansible-forks }}
         CUSTOM_INVENTORY: ${{ inputs.custom-inventory }}
         NETWORK_NAME: ${{ inputs.network-name }}
+        NODE_TYPE: ${{ inputs.node-type }}
       shell: bash
       run: |
         set -e
@@ -26,6 +33,7 @@ runs:
         cd sn-testnet-deploy
         command="testnet-deploy start-telegraf --name $NETWORK_NAME "
         [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
+        [[ -n $NODE_TYPE ]] && command="$command --node-type $NODE_TYPE "
 
         if [[ -n $CUSTOM_INVENTORY ]]; then
           IFS=',' read -ra VM_NAMES <<< "$CUSTOM_INVENTORY"
