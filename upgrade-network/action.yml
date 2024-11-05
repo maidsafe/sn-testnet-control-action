@@ -11,6 +11,10 @@ inputs:
     description: >
       Run the upgrade against particular VMs in the environment.
       Should be a comma-separated list. Cannot be used with the node-type input.
+  delay:
+    description: >
+      A pre-upgrade delay to apply. Useful for when there is one node per machine.
+      Value is in seconds.
   interval:
     description: The interval to apply between each node upgrade. Units are ms. The default is 200.
   network-name:
@@ -35,6 +39,7 @@ runs:
         ANSIBLE_VERBOSE: ${{ inputs.ansible-verbose }}
         AWS_DEFAULT_REGION: ${{ inputs.aws-region }}
         CUSTOM_INVENTORY: ${{ inputs.custom-inventory }}
+        DELAY: ${{ inputs.delay }}
         INTERVAL: ${{ inputs.interval }}
         NETWORK_NAME: ${{ inputs.network-name }}
         NODE_TYPE: ${{ inputs.node-type }}
@@ -47,6 +52,7 @@ runs:
         command="testnet-deploy upgrade --name $NETWORK_NAME "
         [[ $ANSIBLE_VERBOSE == "true" ]] && command="$command --ansible-verbose "
         [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
+        [[ -n $DELAY ]] && command="$command --pre-upgrade-delay $DELAY "
         [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
         [[ -n $VERSION ]] && command="$command --version $VERSION "
         [[ -n $NODE_TYPE ]] && command="$command --node-type $NODE_TYPE "
