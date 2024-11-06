@@ -46,6 +46,12 @@ inputs:
   rust-log:
     description: Set RUST_LOG to this value for testnet-deploy
     required: false
+  safenode-version:
+    description: Version of safenode to use for any new nodes
+    required: false
+  safenode-manager-version:
+    description: Version of safenode-manager to use for any new nodes
+    required: false
   uploaders-count:
     description: Number of uploaders to run per VM
   uploader-vm-count:
@@ -75,6 +81,8 @@ runs:
         PROVIDER: ${{ inputs.provider }}
         PUBLIC_RPC: ${{ inputs.public-rpc }}
         RUST_LOG: ${{ inputs.rust-log }}
+        SAFENODE_VERSION: ${{ inputs.safenode-version }}
+        SAFENODE_MANAGER_VERSION: ${{ inputs.safenode-manager-version }}
       shell: bash
       run: |
         set -e
@@ -99,6 +107,8 @@ runs:
         [[ $PLAN == "true" ]] && command="$command --plan "
         [[ $PUBLIC_RPC == "true" ]] && command="$command --public-rpc "
         [[ -n $AUTONOMI_VERSION ]] && command="$command --safe-version $AUTONOMI_VERSION "
+        [[ -n $SAFENODE_VERSION ]] && command="$command --safenode-version $SAFENODE_VERSION "
+        [[ -n $SAFENODE_MANAGER_VERSION ]] && command="$command --safenode-manager-version $SAFENODE_MANAGER_VERSION "
 
         echo "Will run testnet-deploy with: $command"
         eval $command
