@@ -3,6 +3,12 @@ description: Prints the inventory for a given network
 inputs:
   ansible-forks:
     description: The number of forks to use with Ansible
+  bootstrap:
+    description: Print only the bootstrap peer list
+    default: false
+  full:
+    description: Print the full inventory including all listener addresses for all nodes
+    default: false
   network-contacts-file-name:
     description: Provide a name for the network contacts file
   network-name:
@@ -14,6 +20,8 @@ runs:
   steps:
     - name: print inventory
       env:
+        BOOTSTRAP: ${{ inputs.bootstrap }}
+        FULL: ${{ inputs.full }}
         PROVIDER: ${{ inputs.provider }}
         NETWORK_CONTACTS_FILE_NAME: ${{ inputs.network-contacts-file-name }}
         NETWORK_NAME: ${{ inputs.network-name }}
@@ -21,5 +29,7 @@ runs:
       run: |
         cd sn-testnet-deploy
         command="testnet-deploy inventory --name $NETWORK_NAME --force-regeneration "
+        [[ $BOOTSTRAP == "true" ]] && command="$command --bootstrap "
+        [[ $FULL == "true" ]] && command="$command --full "
         [[ -n $NETWORK_CONTACTS_FILE_NAME ]] && command="$command --network-contacts-file-name $NETWORK_CONTACTS_FILE_NAME"
         eval $command
