@@ -8,6 +8,10 @@ inputs:
       Run the stop node playbook against particular VMs in the environment.
       Should be a comma-separated list.
       Cannot be used with the node-type input.
+  delay:
+    description: >
+      A pre-upgrade delay to apply. Useful for when there is one node per machine.
+      Value is in seconds.
   interval:
     description: An interval to be applied between stopping the nodes. Value is in milliseconds.
   network-name:
@@ -26,6 +30,7 @@ runs:
       env:
         ANSIBLE_FORKS: ${{ inputs.ansible-forks }}
         CUSTOM_INVENTORY: ${{ inputs.custom-inventory }}
+        DELAY: ${{ inputs.delay }}
         INTERVAL: ${{ inputs.interval }}
         NETWORK_NAME: ${{ inputs.network-name }}
         NODE_TYPE: ${{ inputs.node-type }}
@@ -36,6 +41,7 @@ runs:
         cd sn-testnet-deploy
         command="testnet-deploy stop --name $NETWORK_NAME "
         [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
+        [[ -n $DELAY ]] && command="$command --delay $DELAY "
         [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
         [[ -n $NODE_TYPE ]] && command="$command --node-type $NODE_TYPE "
 
