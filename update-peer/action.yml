@@ -1,0 +1,45 @@
+name: Update Peer
+description: Update the peer multiaddr used in all service definitions
+inputs:
+  custom-inventory:
+    description: >
+      Run the upgrade against particular VMs in the environment.
+      Should be a comma-separated list. Cannot be used with the node-type input.
+  network-name:
+    description: The name of the network
+    required: true
+  node-type:
+    description: >
+      Specify the type of node VM to run against.
+      Valid values are "bootstrap", "genesis", "generic" and "private".
+      Cannot be used with the custom-inventory input.
+  peer:
+    description: The new peer multiaddr
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: update peer
+      env:
+        CUSTOM_INVENTORY: ${{ inputs.custom-inventory }}
+        NETWORK_NAME: ${{ inputs.network-name }}
+        NODE_TYPE: ${{ inputs.node-type }}
+        PEER: ${{ inputs.peer }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        command="testnet-deploy update-peer --name $NETWORK_NAME --peer $PEER "
+        [[ -n $NODE_TYPE ]] && command="$command --node-type $NODE_TYPE "
+
+        if [[ -n $CUSTOM_INVENTORY ]]; then
+          IFS=',' read -ra VM_NAMES <<< "$CUSTOM_INVENTORY"
+          for vm_name in "${VM_NAMES[@]}"; do
+            command="$command --custom-inventory $vm_name"
+          done
+        fi
+
+        echo "Will run testnet-deploy with: $command"
+        eval $command
