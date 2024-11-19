@@ -1,0 +1,25 @@
+name: Kill Droplets
+description: Delete a list of droplets by name
+inputs:
+  droplet-names:
+    description: Comma separated list of droplet names to delete
+    required: true
+  personal-access-token:
+    description: Personal access token scoped to delete droplets
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ inputs.personal-access-token }}
+    - name: delete droplets
+      shell: bash
+      run: |
+        IFS=',' read -ra DROPLETS <<< "${{ inputs.droplet-names }}"
+        for droplet in "${DROPLETS[@]}"; do
+          echo "Deleting droplet: $droplet"
+          doctl compute droplet delete -f "$droplet"
+        done
