@@ -26,12 +26,16 @@ inputs:
     required: true
   environment-vars:
     description: Pass a comma-separated list of environment variables to safenode services
+  evm-data-payments-address:
+    description: The address of the EVM data payments contract
   evm-network-type:
     description: >
       The type of EVM network to use. Possible values are 'arbitrum-one', 'arbitrum-sepolia', or 'custom'.
     default: 'arbitrum-one'
   evm-node-vm-size:
     description: The size of the EVM node VMs
+  evm-payment-token-address:
+    description: The address of the EVM payment token contract
   foundation-pk:
     description: Optionally set the foundation public key for a custom safenode binary.
   genesis-pk:
@@ -116,8 +120,10 @@ runs:
         DOWNLOADERS_COUNT: ${{ inputs.downloaders-count }}
         ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
         ENVIRONMENT_VARS: ${{ inputs.environment-vars }}
+        EVM_DATA_PAYMENTS_ADDRESS: ${{ inputs.evm-data-payments-address }}
         EVM_NETWORK_TYPE: ${{ inputs.evm-network-type }}
         EVM_NODE_VM_SIZE: ${{ inputs.evm-node-vm-size }}
+        EVM_PAYMENT_TOKEN_ADDRESS: ${{ inputs.evm-payment-token-address }}
         FOUNDATION_PK: ${{ inputs.foundation-pk }}
         GENESIS_PK: ${{ inputs.genesis-pk }}
         INTERVAL: ${{ inputs.interval }}
@@ -164,8 +170,10 @@ runs:
         [[ -n $CHUNK_SIZE ]] && command="$command --chunk-size $CHUNK_SIZE "
         [[ $DOWNLOADERS_COUNT -gt 0 ]] && command="$command --downloaders-count $DOWNLOADERS_COUNT "
         [[ -n $ENVIRONMENT_VARS ]] && command="$command --env $ENVIRONMENT_VARS "
+        [[ -n $EVM_DATA_PAYMENTS_ADDRESS ]] && command="$command --evm-data-payments-address $EVM_DATA_PAYMENTS_ADDRESS "
         [[ -n $EVM_NETWORK_TYPE ]] && command="$command --evm-network-type $EVM_NETWORK_TYPE "
         [[ -n $EVM_NODE_VM_SIZE ]] && command="$command --evm-node-vm-size $EVM_NODE_VM_SIZE "
+        [[ -n $EVM_PAYMENT_TOKEN_ADDRESS ]] && command="$command --evm-payment-token-address $EVM_PAYMENT_TOKEN_ADDRESS "
         [[ -n $FOUNDATION_PK ]] && command="$command --foundation-pk $FOUNDATION_PK "
         [[ -n $GENESIS_PK ]] && command="$command --genesis-pk $GENESIS_PK "
         [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
