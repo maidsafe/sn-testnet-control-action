@@ -204,7 +204,7 @@ runs:
         [[ -n $UPLOADER_VM_COUNT ]] && command="$command --uploader-vm-count $UPLOADER_VM_COUNT "
         [[ -n $UPLOADER_VM_SIZE ]] && command="$command --uploader-vm-size $UPLOADER_VM_SIZE "
         [[ -n $UPLOADERS_COUNT ]] && command="$command --uploaders-count $UPLOADERS_COUNT "
-        [[ -n $WALLET_SECRET_KEY && $EVM_NETWORK_TYPE != "custom" ]] && command="$command --funding-wallet-secret-key $WALLET_SECRET_KEY "
+        [[ -n $WALLET_SECRET_KEY ]] && command="$command --funding-wallet-secret-key $WALLET_SECRET_KEY "
 
         echo "Will run testnet-deploy with: $command"
         eval $command
