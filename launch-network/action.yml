@@ -36,6 +36,8 @@ inputs:
     description: The size of the EVM node VMs
   evm-payment-token-address:
     description: The address of the EVM payment token contract
+  evm-rpc-url:
+    description: The RPC URL for the EVM network when using a custom network type
   foundation-pk:
     description: Optionally set the foundation public key for a custom safenode binary.
   genesis-pk:
@@ -124,6 +126,7 @@ runs:
         EVM_NETWORK_TYPE: ${{ inputs.evm-network-type }}
         EVM_NODE_VM_SIZE: ${{ inputs.evm-node-vm-size }}
         EVM_PAYMENT_TOKEN_ADDRESS: ${{ inputs.evm-payment-token-address }}
+        EVM_RPC_URL: ${{ inputs.evm-rpc-url }}
         FOUNDATION_PK: ${{ inputs.foundation-pk }}
         GENESIS_PK: ${{ inputs.genesis-pk }}
         INTERVAL: ${{ inputs.interval }}
@@ -174,6 +177,7 @@ runs:
         [[ -n $EVM_NETWORK_TYPE ]] && command="$command --evm-network-type $EVM_NETWORK_TYPE "
         [[ -n $EVM_NODE_VM_SIZE ]] && command="$command --evm-node-vm-size $EVM_NODE_VM_SIZE "
         [[ -n $EVM_PAYMENT_TOKEN_ADDRESS ]] && command="$command --evm-payment-token-address $EVM_PAYMENT_TOKEN_ADDRESS "
+        [[ -n $EVM_RPC_URL ]] && command="$command --evm-rpc-url $EVM_RPC_URL "
         [[ -n $FOUNDATION_PK ]] && command="$command --foundation-pk $FOUNDATION_PK "
         [[ -n $GENESIS_PK ]] && command="$command --genesis-pk $GENESIS_PK "
         [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
