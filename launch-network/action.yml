@@ -6,6 +6,21 @@ inputs:
   ansible-verbose:
     description: Set to use verbose output for Ansible
     default: false
+  ant-version:
+    description: Supply a version for ant. Otherwise the latest will be used.
+  antctl-version:
+    description: Supply a version for antctl. Otherwise the latest will be used.
+  antnode-version:
+    description: Supply a version for antnode. Otherwise the latest will be used.
+  antnode-features:
+    description: Comma-separated list of features to be used when building a branch of antnode
+  autonomi-branch:
+    description: >
+      Build binaries from the specified autonomi branch. The testnet will use these binaries.
+  autonomi-repo-owner:
+    description: >
+      Build binaries from the autonomi repository owned by this org or username. The testnet
+      will use these binaries.
   bootstrap-node-count:
     description: Number of node services to run on each bootstrap node VM
   bootstrap-node-vm-count:
@@ -81,21 +96,6 @@ inputs:
   rewards-address:
     description: The rewards address for each safenode service.
     required: true
-  safenode-features:
-    description: Comma-separated list of features to be used when building a branch of safenode
-  safe-version:
-    description: Supply a version for safe. Otherwise the latest will be used.
-  safenode-version:
-    description: Supply a version for safenode. Otherwise the latest will be used.
-  safenode-manager-version:
-    description: Supply a version for safenode-manager. Otherwise the latest will be used.
-  safe-network-branch:
-    description: >
-      Build binaries from the specified safe_network branch. The testnet will use these binaries.
-  safe-network-user:
-    description: >
-      Build binaries from the safe_network repository owned by this org or username. The testnet
-      will use these binaries.
   uploader-vm-count:
     description: Number of uploader VMs to be deployed
   uploader-vm-size:
@@ -114,6 +114,12 @@ runs:
       env:
         ANSIBLE_FORKS: ${{ inputs.ansible-forks }}
         ANSIBLE_VERBOSE: ${{ inputs.ansible-verbose }}
+        ANT_VERSION: ${{ inputs.ant-version }}
+        ANTCTL_VERSION: ${{ inputs.antctl-version }}
+        ANTNODE_FEATURES: ${{ inputs.antnode-features }}
+        ANTNODE_VERSION: ${{ inputs.antnode-version }}
+        AUTONOMI_BRANCH: ${{ inputs.autonomi-branch }}
+        AUTONOMI_REPO_OWNER: ${{ inputs.autonomi-repo-owner }}
         BETA_ENCRYPTION_KEY: ${{ inputs.beta-encryption-key }}
         BOOTSTRAP_NODE_COUNT: ${{ inputs.bootstrap-node-count }}
         BOOTSTRAP_NODE_VM_COUNT: ${{ inputs.bootstrap-node-vm-count }}
@@ -147,12 +153,6 @@ runs:
         PUBLIC_RPC: ${{ inputs.public-rpc }}
         RUST_LOG: ${{ inputs.rust-log }}
         REWARDS_ADDRESS: ${{ inputs.rewards-address }}
-        SAFE_NETWORK_BRANCH: ${{ inputs.safe-network-branch }}
-        SAFE_NETWORK_USER: ${{ inputs.safe-network-user }}
-        SAFE_VERSION: ${{ inputs.safe-version }}
-        SAFENODE_FEATURES: ${{ inputs.safenode-features }}
-        SAFENODE_MANAGER_VERSION: ${{ inputs.safenode-manager-version }}
-        SAFENODE_VERSION: ${{ inputs.safenode-version }}
         UPLOADER_VM_COUNT: ${{ inputs.uploader-vm-count }}
         UPLOADER_VM_SIZE: ${{ inputs.uploader-vm-size }}
         UPLOADERS_COUNT: ${{ inputs.uploaders-count }}
@@ -167,6 +167,12 @@ runs:
           --name $NETWORK_NAME \
           --provider $PROVIDER "
         [[ $ANSIBLE_VERBOSE == "true" ]] && command="$command --ansible-verbose "
+        [[ -n $ANT_VERSION ]] && command="$command --ant-version $ANT_VERSION "
+        [[ -n $ANTCTL_VERSION ]] && command="$command --antctl-version $ANTCTL_VERSION "
+        [[ -n $ANTNODE_FEATURES ]] && command="$command --antnode-features $ANTNODE_FEATURES "
+        [[ -n $ANTNODE_VERSION ]] && command="$command --antnode-version $ANTNODE_VERSION "
+        [[ -n $AUTONOMI_BRANCH ]] && command="$command --branch $AUTONOMI_BRANCH "
+        [[ -n $AUTONOMI_REPO_OWNER ]] && command="$command --repo-owner $AUTONOMI_REPO_OWNER "
         [[ -n $BOOTSTRAP_NODE_COUNT ]] && command="$command --bootstrap-node-count $BOOTSTRAP_NODE_COUNT "
         [[ -n $BOOTSTRAP_NODE_VM_COUNT ]] && command="$command --bootstrap-node-vm-count $BOOTSTRAP_NODE_VM_COUNT "
         [[ -n $BOOTSTRAP_NODE_VM_SIZE ]] && command="$command --bootstrap-node-vm-size $BOOTSTRAP_NODE_VM_SIZE "
@@ -195,12 +201,6 @@ runs:
         [[ -n $PROTOCOL_VERSION ]] && command="$command --protocol-version $PROTOCOL_VERSION "
         [[ $PUBLIC_RPC == "true" ]] && command="$command --public-rpc "
         [[ -n $REWARDS_ADDRESS ]] && command="$command --rewards-address $REWARDS_ADDRESS "
-        [[ -n $SAFE_NETWORK_BRANCH ]] && command="$command --branch $SAFE_NETWORK_BRANCH "
-        [[ -n $SAFE_NETWORK_USER ]] && command="$command --repo-owner $SAFE_NETWORK_USER "
-        [[ -n $SAFE_VERSION ]] && command="$command --safe-version $SAFE_VERSION "
-        [[ -n $SAFENODE_FEATURES ]] && command="$command --safenode-features $SAFENODE_FEATURES "
-        [[ -n $SAFENODE_MANAGER_VERSION ]] && command="$command --safenode-manager-version $SAFENODE_MANAGER_VERSION "
-        [[ -n $SAFENODE_VERSION ]] && command="$command --safenode-version $SAFENODE_VERSION "
         [[ -n $UPLOADER_VM_COUNT ]] && command="$command --uploader-vm-count $UPLOADER_VM_COUNT "
         [[ -n $UPLOADER_VM_SIZE ]] && command="$command --uploader-vm-size $UPLOADER_VM_SIZE "
         [[ -n $UPLOADERS_COUNT ]] && command="$command --uploaders-count $UPLOADERS_COUNT "
@@ -209,11 +209,11 @@ runs:
         echo "Will run testnet-deploy with: $command"
         eval $command
 
-    - name: Set SAFE_PEERS and SN_INVENTORY
+    - name: Set ANT_PEERS and ANT_INVENTORY
       shell: bash
       run: |
         inventory_path=/home/runner/.local/share/safe/testnet-deploy/"${{ inputs.network-name }}"-inventory.json
         echo "Inventory Path: $inventory_path"
         genesis_multiaddr=$(jq -r '.genesis_multiaddr' $inventory_path)
-        echo "SAFE_PEERS=$genesis_multiaddr" >> $GITHUB_ENV
-        echo "SN_INVENTORY=$inventory_path" >> $GITHUB_ENV
+        echo "ANT_PEERS=$genesis_multiaddr" >> $GITHUB_ENV
+        echo "ANT_INVENTORY=$inventory_path" >> $GITHUB_ENV
