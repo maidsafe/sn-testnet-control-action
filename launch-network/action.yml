@@ -21,12 +21,6 @@ inputs:
     description: >
       Build binaries from the autonomi repository owned by this org or username. The testnet
       will use these binaries.
-  bootstrap-node-count:
-    description: Number of node services to run on each bootstrap node VM
-  bootstrap-node-vm-count:
-    description: Number of bootstrap node VMs to be deployed
-  bootstrap-node-vm-size:
-    description: The size of the bootstrap node VMs
   chunk-size:
     description: >
       Specify the chunk size in bytes as a 64-bit integer.
@@ -53,10 +47,6 @@ inputs:
     description: The address of the EVM payment token contract
   evm-rpc-url:
     description: The RPC URL for the EVM network when using a custom network type
-  foundation-pk:
-    description: Optionally set the foundation public key for a custom safenode binary.
-  genesis-pk:
-    description: Optionally set the genesis public key for a custom safenode binary.
   interval:
     description: The interval to apply between each node startup. Units are ms. The default is 200.
   log-format:
@@ -67,23 +57,36 @@ inputs:
     description: Maximum number of log files to keep for each service
   network-contacts-file-name:
     description: Provide a name for the network contacts file
+  network-id:
+    description: The network ID (must be between 2 and 255)
+    type: number
+    minimum: 2
+    maximum: 255
   network-name:
     description: The name of the testnet.
     required: true
-  network-royalties-pk:
-    description: Optionally set the network royalties public key for a custom safenode binary.
   node-count:
     description: Number of node services to run on each node VM
   node-vm-count:
     description: Number of node VMs to be deployed
   node-vm-size:
     description: The size of the regular node VMs
-  payment-forward-pk:
-    description: Optionally set the payment forward public key for a custom safenode binary.
+  node-volume-size:
+    description: The size of the volumes for regular node VMs in GB
+  peer-cache-node-count:
+    description: Number of node services to run on each peer cache node VM
+  peer-cache-node-vm-count:
+    description: Number of peer cache node VMs to be deployed
+  peer-cache-node-vm-size:
+    description: The size of the peer cache node VMs
+  peer-cache-node-volume-size:
+    description: The size of the volumes for peer cache node VMs in GB
   private-node-count:
     description: Number of node services to run on each private node VM
   private-node-vm-count:
     description: Number of private node VMs to be deployed
+  private-node-volume-size:
+    description: The size of the volumes for private node VMs in GB
   protocol-version:
     description: The network protocol version can be set to 'restricted' or any custom version string.
   provider:
@@ -120,10 +123,6 @@ runs:
         ANTNODE_VERSION: ${{ inputs.antnode-version }}
         AUTONOMI_BRANCH: ${{ inputs.autonomi-branch }}
         AUTONOMI_REPO_OWNER: ${{ inputs.autonomi-repo-owner }}
-        BETA_ENCRYPTION_KEY: ${{ inputs.beta-encryption-key }}
-        BOOTSTRAP_NODE_COUNT: ${{ inputs.bootstrap-node-count }}
-        BOOTSTRAP_NODE_VM_COUNT: ${{ inputs.bootstrap-node-vm-count }}
-        BOOTSTRAP_NODE_VM_SIZE: ${{ inputs.bootstrap-node-vm-size }}
         CHUNK_SIZE: ${{ inputs.chunk-size }}
         DOWNLOADERS_COUNT: ${{ inputs.downloaders-count }}
         ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
@@ -133,21 +132,24 @@ runs:
         EVM_NODE_VM_SIZE: ${{ inputs.evm-node-vm-size }}
         EVM_PAYMENT_TOKEN_ADDRESS: ${{ inputs.evm-payment-token-address }}
         EVM_RPC_URL: ${{ inputs.evm-rpc-url }}
-        FOUNDATION_PK: ${{ inputs.foundation-pk }}
-        GENESIS_PK: ${{ inputs.genesis-pk }}
         INTERVAL: ${{ inputs.interval }}
         LOG_FORMAT: ${{ inputs.log-format }}
         MAX_ARCHIVED_LOG_FILES: ${{ inputs.max-archived-log-files }}
         MAX_LOG_FILES: ${{ inputs.max-log-files }}
         NETWORK_CONTACTS_FILE_NAME: ${{ inputs.network-contacts-file-name }}
+        NETWORK_ID: ${{ inputs.network-id }}
         NETWORK_NAME: ${{ inputs.network-name }}
-        NETWORK_ROYALTIES_PK: ${{ inputs.network-royalties-pk }}
         NODE_COUNT: ${{ inputs.node-count }}
         NODE_VM_COUNT: ${{ inputs.node-vm-count }}
         NODE_VM_SIZE: ${{ inputs.node-vm-size }}
-        PAYMENT_FORWARD_PK: ${{ inputs.payment-forward-pk }}
+        NODE_VOLUME_SIZE: ${{ inputs.node-volume-size }}
+        PEER_CACHE_NODE_COUNT: ${{ inputs.peer-cache-node-count }}
+        PEER_CACHE_NODE_VM_COUNT: ${{ inputs.peer-cache-node-vm-count }}
+        PEER_CACHE_NODE_VM_SIZE: ${{ inputs.peer-cache-node-vm-size }}
+        PEER_CACHE_NODE_VOLUME_SIZE: ${{ inputs.peer-cache-node-volume-size }}
         PRIVATE_NODE_COUNT: ${{ inputs.private-node-count }}
         PRIVATE_NODE_VM_COUNT: ${{ inputs.private-node-vm-count }}
+        PRIVATE_NODE_VOLUME_SIZE: ${{ inputs.private-node-volume-size }}
         PROTOCOL_VERSION: ${{ inputs.protocol-version }}
         PROVIDER: ${{ inputs.provider }}
         PUBLIC_RPC: ${{ inputs.public-rpc }}
@@ -173,9 +175,6 @@ runs:
         [[ -n $ANTNODE_VERSION ]] && command="$command --antnode-version $ANTNODE_VERSION "
         [[ -n $AUTONOMI_BRANCH ]] && command="$command --branch $AUTONOMI_BRANCH "
         [[ -n $AUTONOMI_REPO_OWNER ]] && command="$command --repo-owner $AUTONOMI_REPO_OWNER "
-        [[ -n $BOOTSTRAP_NODE_COUNT ]] && command="$command --bootstrap-node-count $BOOTSTRAP_NODE_COUNT "
-        [[ -n $BOOTSTRAP_NODE_VM_COUNT ]] && command="$command --bootstrap-node-vm-count $BOOTSTRAP_NODE_VM_COUNT "
-        [[ -n $BOOTSTRAP_NODE_VM_SIZE ]] && command="$command --bootstrap-node-vm-size $BOOTSTRAP_NODE_VM_SIZE "
         [[ -n $CHUNK_SIZE ]] && command="$command --chunk-size $CHUNK_SIZE "
         [[ $DOWNLOADERS_COUNT -gt 0 ]] && command="$command --downloaders-count $DOWNLOADERS_COUNT "
         [[ -n $ENVIRONMENT_VARS ]] && command="$command --env $ENVIRONMENT_VARS "
@@ -184,20 +183,23 @@ runs:
         [[ -n $EVM_NODE_VM_SIZE ]] && command="$command --evm-node-vm-size $EVM_NODE_VM_SIZE "
         [[ -n $EVM_PAYMENT_TOKEN_ADDRESS ]] && command="$command --evm-payment-token-address $EVM_PAYMENT_TOKEN_ADDRESS "
         [[ -n $EVM_RPC_URL ]] && command="$command --evm-rpc-url $EVM_RPC_URL "
-        [[ -n $FOUNDATION_PK ]] && command="$command --foundation-pk $FOUNDATION_PK "
-        [[ -n $GENESIS_PK ]] && command="$command --genesis-pk $GENESIS_PK "
         [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
         [[ -n $LOG_FORMAT ]] && command="$command --log-format $LOG_FORMAT "
         [[ -n $MAX_ARCHIVED_LOG_FILES ]] && command="$command --max-archived-log-files $MAX_ARCHIVED_LOG_FILES "
         [[ -n $MAX_LOG_FILES ]] && command="$command --max-log-files $MAX_LOG_FILES "
         [[ -n $NETWORK_CONTACTS_FILE_NAME ]] && command="$command --network-contacts-file-name $NETWORK_CONTACTS_FILE_NAME "
-        [[ -n $NETWORK_ROYALTIES_PK ]] && command="$command --network-royalties-pk $NETWORK_ROYALTIES_PK "
+        [[ -n $NETWORK_ID ]] && command="$command --network-id $NETWORK_ID "
         [[ -n $NODE_COUNT ]] && command="$command --node-count $NODE_COUNT "
         [[ -n $NODE_VM_COUNT ]] && command="$command --node-vm-count $NODE_VM_COUNT "
         [[ -n $NODE_VM_SIZE ]] && command="$command --node-vm-size $NODE_VM_SIZE "
-        [[ -n $PAYMENT_FORWARD_PK ]] && command="$command --payment-forward-pk $PAYMENT_FORWARD_PK "
+        [[ -n $NODE_VOLUME_SIZE ]] && command="$command --node-volume-size $NODE_VOLUME_SIZE "
+        [[ -n $PEER_CACHE_NODE_COUNT ]] && command="$command --peer-cache-node-count $PEER_CACHE_NODE_COUNT "
+        [[ -n $PEER_CACHE_NODE_VM_COUNT ]] && command="$command --peer-cache-node-vm-count $PEER_CACHE_NODE_VM_COUNT "
+        [[ -n $PEER_CACHE_NODE_VM_SIZE ]] && command="$command --peer-cache-node-vm-size $PEER_CACHE_NODE_VM_SIZE "
+        [[ -n $PEER_CACHE_NODE_VOLUME_SIZE ]] && command="$command --peer-cache-node-volume-size $PEER_CACHE_NODE_VOLUME_SIZE "
         [[ -n $PRIVATE_NODE_COUNT ]] && command="$command --private-node-count $PRIVATE_NODE_COUNT "
         [[ -n $PRIVATE_NODE_VM_COUNT ]] && command="$command --private-node-vm-count $PRIVATE_NODE_VM_COUNT "
+        [[ -n $PRIVATE_NODE_VOLUME_SIZE ]] && command="$command --private-node-volume-size $PRIVATE_NODE_VOLUME_SIZE "
         [[ -n $PROTOCOL_VERSION ]] && command="$command --protocol-version $PROTOCOL_VERSION "
         [[ $PUBLIC_RPC == "true" ]] && command="$command --public-rpc "
         [[ -n $REWARDS_ADDRESS ]] && command="$command --rewards-address $REWARDS_ADDRESS "
