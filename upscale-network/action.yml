@@ -1,10 +1,16 @@
 name: Upscale Network
 description: Upscale an existing network to a given configuration
 inputs:
-  autonomi-version:
+  ant-version:
     description: >
       Provide the version of autonomi to use with any new uploaders.
       This value must be supplied when `uploader-vm-count` is used.
+    required: false
+  antctl-version:
+    description: Version of antctl to use for any new nodes
+    required: false
+  antnode-version:
+    description: Version of safenode to use for any new nodes
     required: false
   bootstrap-node-count:
     description: Number of node services to run on each bootstrap node VM
@@ -18,10 +24,10 @@ inputs:
     default: false
   interval:
     description: The interval to apply between each node upgrade. Units are ms. The default is 200.
-  max-log-files:
-    description: Maximum number of log files to keep for each service
   max-archived-log-files:
     description: Maximum number of archived log files to keep for each service
+  max-log-files:
+    description: Maximum number of log files to keep for each service
   network-name:
     description: The name of the network
     required: true
@@ -46,23 +52,19 @@ inputs:
   rust-log:
     description: Set RUST_LOG to this value for testnet-deploy
     required: false
-  safenode-version:
-    description: Version of safenode to use for any new nodes
-    required: false
-  safenode-manager-version:
-    description: Version of safenode-manager to use for any new nodes
-    required: false
-  uploaders-count:
-    description: Number of uploaders to run per VM
   uploader-vm-count:
     description: Number of uploader VMs to be deployed
+  uploaders-count:
+    description: Number of uploaders to run per VM
 
 runs:
   using: composite
   steps:
     - name: upscale network
       env:
-        AUTONOMI_VERSION: ${{ inputs.autonomi-version }}
+        ANT_VERSION: ${{ inputs.ant-version }}
+        ANTCTL_VERSION: ${{ inputs.antctl-version }}
+        ANTNODE_VERSION: ${{ inputs.antnode-version }}
         DESIRED_BOOTSTRAP_NODE_COUNT: ${{ inputs.bootstrap-node-count }}
         DESIRED_BOOTSTRAP_NODE_VM_COUNT: ${{ inputs.bootstrap-node-vm-count }}
         DESIRED_NODE_COUNT: ${{ inputs.node-count }}
@@ -81,8 +83,6 @@ runs:
         PROVIDER: ${{ inputs.provider }}
         PUBLIC_RPC: ${{ inputs.public-rpc }}
         RUST_LOG: ${{ inputs.rust-log }}
-        SAFENODE_VERSION: ${{ inputs.safenode-version }}
-        SAFENODE_MANAGER_VERSION: ${{ inputs.safenode-manager-version }}
       shell: bash
       run: |
         set -e
@@ -91,6 +91,9 @@ runs:
         command="testnet-deploy upscale \
           --name $NETWORK_NAME \
           --provider $PROVIDER "
+        [[ -n $ANT_VERSION ]] && command="$command --ant-version $ANT_VERSION "
+        [[ -n $ANTCTL_VERSION ]] && command="$command --antctl-version $ANTCTL_VERSION "
+        [[ -n $ANTNODE_VERSION ]] && command="$command --antnode-version $ANTNODE_VERSION "
         [[ -n $DESIRED_BOOTSTRAP_NODE_COUNT && $DESIRED_BOOTSTRAP_NODE_COUNT != "0" ]] && command="$command --desired-bootstrap-node-count $DESIRED_BOOTSTRAP_NODE_COUNT "
         [[ -n $DESIRED_BOOTSTRAP_NODE_VM_COUNT && $DESIRED_BOOTSTRAP_NODE_VM_COUNT != "0" ]] && command="$command --desired-bootstrap-node-vm-count $DESIRED_BOOTSTRAP_NODE_VM_COUNT "
         [[ -n $DESIRED_NODE_COUNT && $DESIRED_NODE_COUNT != "0" ]] && command="$command --desired-node-count $DESIRED_NODE_COUNT "
@@ -106,9 +109,6 @@ runs:
         [[ -n $MAX_LOG_FILES ]] && command="$command --max-log-files $MAX_LOG_FILES "
         [[ $PLAN == "true" ]] && command="$command --plan "
         [[ $PUBLIC_RPC == "true" ]] && command="$command --public-rpc "
-        [[ -n $AUTONOMI_VERSION ]] && command="$command --safe-version $AUTONOMI_VERSION "
-        [[ -n $SAFENODE_VERSION ]] && command="$command --safenode-version $SAFENODE_VERSION "
-        [[ -n $SAFENODE_MANAGER_VERSION ]] && command="$command --safenode-manager-version $SAFENODE_MANAGER_VERSION "
 
         echo "Will run testnet-deploy with: $command"
         eval $command
