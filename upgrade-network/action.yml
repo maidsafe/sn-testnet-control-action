@@ -15,6 +15,9 @@ inputs:
     description: >
       A pre-upgrade delay to apply. Useful for when there is one node per machine.
       Value is in seconds.
+  force:
+    description: >
+      This can be used for downgrading. It will apply the new binary even if the target version is lower.
   interval:
     description: The interval to apply between each node upgrade. Units are ms. The default is 200.
   network-name:
@@ -27,7 +30,7 @@ inputs:
       Cannot be used with the custom-inventory input.
   version:
     description: >
-      The safenode version to upgrade to. If not supplied, `testnet-deploy` will use the latest
+      The antnode version to upgrade to. If not supplied, `testnet-deploy` will use the latest
       version.
 
 runs:
@@ -40,6 +43,7 @@ runs:
         AWS_DEFAULT_REGION: ${{ inputs.aws-region }}
         CUSTOM_INVENTORY: ${{ inputs.custom-inventory }}
         DELAY: ${{ inputs.delay }}
+        FORCE: ${{ inputs.force }}
         INTERVAL: ${{ inputs.interval }}
         NETWORK_NAME: ${{ inputs.network-name }}
         NODE_TYPE: ${{ inputs.node-type }}
@@ -53,9 +57,10 @@ runs:
         [[ $ANSIBLE_VERBOSE == "true" ]] && command="$command --ansible-verbose "
         [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
         [[ -n $DELAY ]] && command="$command --pre-upgrade-delay $DELAY "
+        [[ $FORCE == "true" ]] && command="$command --force "
         [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
-        [[ -n $VERSION ]] && command="$command --version $VERSION "
         [[ -n $NODE_TYPE ]] && command="$command --node-type $NODE_TYPE "
+        [[ -n $VERSION ]] && command="$command --version $VERSION "
 
         if [[ -n $CUSTOM_INVENTORY ]]; then
           IFS=',' read -ra VM_NAMES <<< "$CUSTOM_INVENTORY"
