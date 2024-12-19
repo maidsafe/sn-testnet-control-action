@@ -1,5 +1,5 @@
-name: Upgrade Node Manager
-description: Upgrade the node manager binary on all VMs in the deployment
+name: Upgrade Antctl
+description: Upgrade the antctl binary on all VMs in the deployment
 inputs:
   custom-inventory:
     description: >
@@ -10,16 +10,16 @@ inputs:
     required: true
   node-type:
     description: >
-      Specify the type of node VM to upgrade the node manager on. If not provided, the node manager on
+      Specify the type of node VM to upgrade the antctl on. If not provided, the antctl on
       all the node VMs will be upgraded. Valid values are "bootstrap", "genesis", "generic" and "private".
       Cannot be used with the custom-inventory input.
   version:
-    description: The safenode-manager version to upgrade to
+    description: The antctl version to upgrade to
 
 runs:
   using: composite
   steps:
-    - name: upgrade node manager
+    - name: upgrade antctl
       env:
         CUSTOM_INVENTORY: ${{ inputs.custom-inventory }}
         NETWORK_NAME: ${{ inputs.network-name }}
@@ -30,7 +30,7 @@ runs:
         set -e
 
         cd sn-testnet-deploy
-        command="testnet-deploy upgrade-node-manager --name $NETWORK_NAME "
+        command="testnet-deploy upgrade-antctl --name $NETWORK_NAME "
         [[ -n $VERSION ]] && command="$command --version $VERSION "
         [[ -n $NODE_TYPE ]] && command="$command --node-type $NODE_TYPE "
 
