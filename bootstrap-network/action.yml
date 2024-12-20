@@ -6,6 +6,19 @@ inputs:
   ansible-verbose:
     description: Set to use verbose output for Ansible
     default: false
+  antctl-version:
+    description: Supply a version for antctl. Otherwise the latest will be used.
+  antnode-features:
+    description: Comma-separated list of features to be used when building a branch of antnode
+  antnode-version:
+    description: Supply a version for antnode. Otherwise the latest will be used.
+  autonomi-branch:
+    description: >
+      Build binaries from the specified autonomi branch. The testnet will use these binaries.
+  autonomi-repo-owner:
+    description: >
+      Build binaries from the autonomi repository owned by this org or username. The testnet
+      will use these binaries.
   chunk-size:
     description: The size of chunks in bytes for data storage
   environment-type:
@@ -17,8 +30,6 @@ inputs:
     description: Pass a comma-separated list of environment variables to safenode services
   evm-data-payments-address:
     description: The address of the EVM data payments contract
-  evm-deployer-wallet-private-key:
-    description: The private key of the wallet used for EVM contract deployment
   evm-network-type:
     description: >
       The type of EVM network to use. Possible values are 'arbitrum-one', 'arbitrum-sepolia', or 'custom'.
@@ -27,10 +38,6 @@ inputs:
     description: The address of the EVM payment token contract
   evm-rpc-url:
     description: The RPC URL for the EVM network
-  foundation-pk:
-    description: Optionally set the foundation public key for a custom safenode binary.
-  genesis-pk:
-    description: Optionally set the genesis public key for a custom safenode binary.
   interval:
     description: The interval to apply between each node startup. Units are ms. The default is 200.
   log-format:
@@ -44,16 +51,12 @@ inputs:
   network-name:
     description: The name of the testnet.
     required: true
-  network-royalties-pk:
-    description: Optionally set the network royalties public key for a custom safenode binary.
   node-count:
     description: Number of node services to run on each node VM
   node-vm-count:
     description: Number of node VMs to be deployed
   node-vm-size:
     description: The size of the regular node VMs
-  payment-forward-pk:
-    description: Optionally set the payment forward public key for a custom safenode binary.
   peer:
     description: A peer from the network to bootstrap from. Should be in multiaddr format.
     required: true
@@ -66,19 +69,6 @@ inputs:
     required: true
   rewards-address:
     description: The address for receiving network rewards
-  safe-network-branch:
-    description: >
-      Build binaries from the specified safe_network branch. The testnet will use these binaries.
-  safe-network-user:
-    description: >
-      Build binaries from the safe_network repository owned by this org or username. The testnet
-      will use these binaries.
-  safenode-features:
-    description: Comma-separated list of features to be used when building a branch of safenode
-  safenode-manager-version:
-    description: Supply a version for safenode-manager. Otherwise the latest will be used.
-  safenode-version:
-    description: Supply a version for safenode. Otherwise the latest will be used.
 
 runs:
   using: composite
@@ -87,37 +77,32 @@ runs:
       env:
         ANSIBLE_FORKS: ${{ inputs.ansible-forks }}
         ANSIBLE_VERBOSE: ${{ inputs.ansible-verbose }}
+        ANTCTL_VERSION: ${{ inputs.antctl-version }}
+        ANTNODE_FEATURES: ${{ inputs.antnode-features }}
+        ANTNODE_VERSION: ${{ inputs.antnode-version }}
+        AUTONOMI_BRANCH: ${{ inputs.autonomi-branch }}
+        AUTONOMI_REPO_OWNER: ${{ inputs.autonomi-repo-owner }}
         CHUNK_SIZE: ${{ inputs.chunk-size }}
         ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
         ENVIRONMENT_VARS: ${{ inputs.environment-vars }}
         EVM_DATA_PAYMENTS_ADDRESS: ${{ inputs.evm-data-payments-address }}
-        EVM_DEPLOYER_WALLET_PRIVATE_KEY: ${{ inputs.evm-deployer-wallet-private-key }}
         EVM_NETWORK_TYPE: ${{ inputs.evm-network-type }}
         EVM_PAYMENT_TOKEN_ADDRESS: ${{ inputs.evm-payment-token-address }}
         EVM_RPC_URL: ${{ inputs.evm-rpc-url }}
-        FOUNDATION_PK: ${{ inputs.foundation-pk }}
-        GENESIS_PK: ${{ inputs.genesis-pk }}
         INTERVAL: ${{ inputs.interval }}
         LOG_FORMAT: ${{ inputs.log-format }}
         MAX_ARCHIVED_LOG_FILES: ${{ inputs.max-archived-log-files }}
         MAX_LOG_FILES: ${{ inputs.max-log-files }}
         NETWORK_CONTACTS_FILE_NAME: ${{ inputs.network-contacts-file-name }}
         NETWORK_NAME: ${{ inputs.network-name }}
-        NETWORK_ROYALTIES_PK: ${{ inputs.network-royalties-pk }}
         NODE_COUNT: ${{ inputs.node-count }}
         NODE_VM_COUNT: ${{ inputs.node-vm-count }}
         NODE_VM_SIZE: ${{ inputs.node-vm-size }}
-        PAYMENT_FORWARD_PK: ${{ inputs.payment-forward-pk }}
         PEER: ${{ inputs.peer }}
         PRIVATE_NODE_COUNT: ${{ inputs.private-node-count }}
         PRIVATE_NODE_VM_COUNT: ${{ inputs.private-node-vm-count }}
         PROVIDER: ${{ inputs.provider }}
         REWARDS_ADDRESS: ${{ inputs.rewards-address }}
-        SAFE_NETWORK_BRANCH: ${{ inputs.safe-network-branch }}
-        SAFE_NETWORK_USER: ${{ inputs.safe-network-user }}
-        SAFENODE_FEATURES: ${{ inputs.safenode-features }}
-        SAFENODE_MANAGER_VERSION: ${{ inputs.safenode-manager-version }}
-        SAFENODE_VERSION: ${{ inputs.safenode-version }}
       shell: bash
       run: |
         set -e
@@ -130,33 +115,28 @@ runs:
           --provider $PROVIDER "
         [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
         [[ $ANSIBLE_VERBOSE == "true" ]] && command="$command --ansible-verbose "
+        [[ -n $AUTONOMI_BRANCH ]] && command="$command --branch $AUTONOMI_BRANCH "
+        [[ -n $AUTONOMI_REPO_OWNER ]] && command="$command --repo-owner $AUTONOMI_REPO_OWNER "
+        [[ -n $ANTNODE_FEATURES ]] && command="$command --antnode-features $ANTNODE_FEATURES "
+        [[ -n $ANTCTL_VERSION ]] && command="$command --antctl-version $ANTCTL_VERSION "
+        [[ -n $ANTNODE_VERSION ]] && command="$command --antnode-version $ANTNODE_VERSION "
         [[ -n $CHUNK_SIZE ]] && command="$command --chunk-size $CHUNK_SIZE "
         [[ -n $ENVIRONMENT_VARS ]] && command="$command --env $ENVIRONMENT_VARS "
         [[ -n $EVM_DATA_PAYMENTS_ADDRESS ]] && command="$command --evm-data-payments-address $EVM_DATA_PAYMENTS_ADDRESS "
-        [[ -n $EVM_DEPLOYER_WALLET_PRIVATE_KEY ]] && command="$command --evm-deployer-wallet-private-key $EVM_DEPLOYER_WALLET_PRIVATE_KEY "
         [[ -n $EVM_NETWORK_TYPE ]] && command="$command --evm-network-type $EVM_NETWORK_TYPE "
         [[ -n $EVM_PAYMENT_TOKEN_ADDRESS ]] && command="$command --evm-payment-token-address $EVM_PAYMENT_TOKEN_ADDRESS "
         [[ -n $EVM_RPC_URL ]] && command="$command --evm-rpc-url $EVM_RPC_URL "
-        [[ -n $FOUNDATION_PK ]] && command="$command --foundation-pk $FOUNDATION_PK "
-        [[ -n $GENESIS_PK ]] && command="$command --genesis-pk $GENESIS_PK "
         [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
         [[ -n $LOG_FORMAT ]] && command="$command --log-format $LOG_FORMAT "
         [[ -n $MAX_ARCHIVED_LOG_FILES ]] && command="$command --max-archived-log-files $MAX_ARCHIVED_LOG_FILES "
         [[ -n $MAX_LOG_FILES ]] && command="$command --max-log-files $MAX_LOG_FILES "
         [[ -n $NETWORK_CONTACTS_FILE_NAME ]] && command="$command --network-contacts-file-name $NETWORK_CONTACTS_FILE_NAME "
-        [[ -n $NETWORK_ROYALTIES_PK ]] && command="$command --network-royalties-pk $NETWORK_ROYALTIES_PK "
         [[ -n $NODE_COUNT ]] && command="$command --node-count $NODE_COUNT "
         [[ -n $NODE_VM_COUNT ]] && command="$command --node-vm-count $NODE_VM_COUNT "
         [[ -n $NODE_VM_SIZE ]] && command="$command --node-vm-size $NODE_VM_SIZE "
-        [[ -n $PAYMENT_FORWARD_PK ]] && command="$command --payment-forward-pk $PAYMENT_FORWARD_PK "
         [[ -n $PRIVATE_NODE_COUNT ]] && command="$command --private-node-count $PRIVATE_NODE_COUNT "
         [[ -n $PRIVATE_NODE_VM_COUNT ]] && command="$command --private-node-vm-count $PRIVATE_NODE_VM_COUNT "
         [[ -n $REWARDS_ADDRESS ]] && command="$command --rewards-address $REWARDS_ADDRESS "
-        [[ -n $SAFE_NETWORK_BRANCH ]] && command="$command --branch $SAFE_NETWORK_BRANCH "
-        [[ -n $SAFE_NETWORK_USER ]] && command="$command --repo-owner $SAFE_NETWORK_USER "
-        [[ -n $SAFENODE_FEATURES ]] && command="$command --safenode-features $SAFENODE_FEATURES "
-        [[ -n $SAFENODE_MANAGER_VERSION ]] && command="$command --safenode-manager-version $SAFENODE_MANAGER_VERSION "
-        [[ -n $SAFENODE_VERSION ]] && command="$command --safenode-version $SAFENODE_VERSION "
 
         echo "Will run testnet-deploy with: $command"
         eval $command
