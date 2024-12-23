@@ -1,0 +1,78 @@
+name: Reset to N Nodes
+description: Reset nodes on specified VMs to a target node count
+inputs:
+  custom-inventory:
+    description: Provide a list of VM names to use as a custom inventory (comma-separated)
+    required: false
+  evm-network-type:
+    description: The EVM network to use (arbitrum-one, arbitrum-sepolia, or custom)
+    default: arbitrum-one
+    required: true
+  forks:
+    description: Maximum number of forks Ansible will use to execute tasks on target hosts
+    default: '50'
+    required: false
+  network-name:
+    description: The name of the network
+    required: true
+  node-count:
+    description: The number of nodes to run after reset
+    required: true
+  node-type:
+    description: Type of node VM to reset (peer-cache, genesis, generic, or private)
+    required: false
+  provider:
+    description: The cloud provider (aws or digital-ocean)
+    default: digital-ocean
+    required: false
+  start-interval:
+    description: The interval between starting each node in milliseconds
+    required: false
+  stop-interval:
+    description: The interval between stopping each node in milliseconds
+    required: false
+  version:
+    description: Version of safenode to use. If not provided, latest version will be used
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: reset to n nodes
+      env:
+        CUSTOM_INVENTORY: ${{ inputs.custom-inventory }}
+        EVM_NETWORK_TYPE: ${{ inputs.evm-network-type }}
+        FORKS: ${{ inputs.forks }}
+        NETWORK_NAME: ${{ inputs.network-name }}
+        NODE_COUNT: ${{ inputs.node-count }}
+        NODE_TYPE: ${{ inputs.node-type }}
+        PROVIDER: ${{ inputs.provider }}
+        START_INTERVAL: ${{ inputs.start-interval }}
+        STOP_INTERVAL: ${{ inputs.stop-interval }}
+        VERSION: ${{ inputs.version }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        command="testnet-deploy reset-to-n-nodes \
+          --name $NETWORK_NAME \
+          --evm-network-type $EVM_NETWORK_TYPE \
+          --node-count $NODE_COUNT \
+          --provider $PROVIDER"
+
+        [[ -n $FORKS ]] && command="$command --forks $FORKS"
+        [[ -n $NODE_TYPE ]] && command="$command --node-type $NODE_TYPE"
+        [[ -n $START_INTERVAL ]] && command="$command --start-interval $START_INTERVAL"
+        [[ -n $STOP_INTERVAL ]] && command="$command --stop-interval $STOP_INTERVAL"
+        [[ -n $VERSION ]] && command="$command --version $VERSION"
+
+        if [[ -n $CUSTOM_INVENTORY ]]; then
+          IFS=',' read -ra VM_NAMES <<< "$CUSTOM_INVENTORY"
+          for vm_name in "${VM_NAMES[@]}"; do
+            command="$command --custom-inventory $vm_name"
+          done
+        fi
+
+        echo "Will run testnet-deploy with: $command"
+        eval $command
