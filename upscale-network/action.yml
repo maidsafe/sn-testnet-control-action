@@ -19,13 +19,22 @@ inputs:
     description: >
       Build binaries from the autonomi repository owned by this org or username. The testnet
       will use these binaries.
-  bootstrap-node-count:
-    description: Number of node services to run on each bootstrap node VM
-  bootstrap-node-vm-count:
-    description: Number of bootstrap node VMs to be deployed
-  downloaders-count:
-    description: Number of downloader services to run
-    default: '0'
+  desired-node-count:
+    description: Number of node services to run on each node VM
+  desired-node-vm-count:
+    description: Number of node VMs to be deployed
+  desired-peer-cache-node-count:
+    description: Number of node services to run on each peer cache node VM
+  desired-peer-cache-node-vm-count:
+    description: Number of peer cache node VMs to be deployed
+  desired-private-node-count:
+    description: Number of node services to run on each private node VM
+  desired-private-node-vm-count:
+    description: Number of private node VMs to be deployed
+  desired-uploader-vm-count:
+    description: Number of uploader VMs to be deployed
+  desired-uploaders-count:
+    description: Number of uploaders to run per VM
   infra-only:
     description: Only run the terraform part to upscale the machines
     default: false
@@ -38,17 +47,9 @@ inputs:
   network-name:
     description: The name of the network
     required: true
-  node-count:
-    description: Number of node services to run on each node VM
-  node-vm-count:
-    description: Number of node VMs to be deployed
   plan:
     description: Run a plan for the operation without performing it
     default: false
-  private-node-count:
-    description: Number of node services to run on each private node VM
-  private-node-vm-count:
-    description: Number of private node VMs to be deployed
   provider:
     description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
     required: true
@@ -59,10 +60,6 @@ inputs:
   rust-log:
     description: Set RUST_LOG to this value for testnet-deploy
     required: false
-  uploader-vm-count:
-    description: Number of uploader VMs to be deployed
-  uploaders-count:
-    description: Number of uploaders to run per VM
 
 runs:
   using: composite
@@ -74,15 +71,14 @@ runs:
         ANTNODE_VERSION: ${{ inputs.antnode-version }}
         AUTONOMI_BRANCH: ${{ inputs.autonomi-branch }}
         AUTONOMI_REPO_OWNER: ${{ inputs.autonomi-repo-owner }}
-        DESIRED_BOOTSTRAP_NODE_COUNT: ${{ inputs.bootstrap-node-count }}
-        DESIRED_BOOTSTRAP_NODE_VM_COUNT: ${{ inputs.bootstrap-node-vm-count }}
         DESIRED_NODE_COUNT: ${{ inputs.node-count }}
         DESIRED_NODE_VM_COUNT: ${{ inputs.node-vm-count }}
+        DESIRED_PEER_CACHE_NODE_COUNT: ${{ inputs.peer-cache-node-count }}
+        DESIRED_PEER_CACHE_NODE_VM_COUNT: ${{ inputs.peer-cache-node-vm-count }}
         DESIRED_PRIVATE_NODE_COUNT: ${{ inputs.private-node-count }}
         DESIRED_PRIVATE_NODE_VM_COUNT: ${{ inputs.private-node-vm-count }}
         DESIRED_UPLOADERS_COUNT: ${{ inputs.uploaders-count }}
         DESIRED_UPLOADER_VM_COUNT: ${{ inputs.uploader-vm-count }}
-        DOWNLOADERS_COUNT: ${{ inputs.downloaders-count }}
         INFRA_ONLY: ${{ inputs.infra-only }}
         INTERVAL: ${{ inputs.interval }}
         MAX_ARCHIVED_LOG_FILES: ${{ inputs.max-archived-log-files }}
@@ -105,15 +101,14 @@ runs:
         [[ -n $ANTNODE_VERSION ]] && command="$command --antnode-version $ANTNODE_VERSION "
         [[ -n $AUTONOMI_BRANCH ]] && command="$command --branch $AUTONOMI_BRANCH "
         [[ -n $AUTONOMI_REPO_OWNER ]] && command="$command --repo-owner $AUTONOMI_REPO_OWNER "
-        [[ -n $DESIRED_BOOTSTRAP_NODE_COUNT && $DESIRED_BOOTSTRAP_NODE_COUNT != "0" ]] && command="$command --desired-bootstrap-node-count $DESIRED_BOOTSTRAP_NODE_COUNT "
-        [[ -n $DESIRED_BOOTSTRAP_NODE_VM_COUNT && $DESIRED_BOOTSTRAP_NODE_VM_COUNT != "0" ]] && command="$command --desired-bootstrap-node-vm-count $DESIRED_BOOTSTRAP_NODE_VM_COUNT "
         [[ -n $DESIRED_NODE_COUNT && $DESIRED_NODE_COUNT != "0" ]] && command="$command --desired-node-count $DESIRED_NODE_COUNT "
         [[ -n $DESIRED_NODE_VM_COUNT && $DESIRED_NODE_VM_COUNT != "0" ]] && command="$command --desired-node-vm-count $DESIRED_NODE_VM_COUNT "
+        [[ -n $DESIRED_PEER_CACHE_NODE_COUNT && $DESIRED_PEER_CACHE_NODE_COUNT != "0" ]] && command="$command --desired-peer-cache-node-count $DESIRED_PEER_CACHE_NODE_COUNT "
+        [[ -n $DESIRED_PEER_CACHE_NODE_VM_COUNT && $DESIRED_PEER_CACHE_NODE_VM_COUNT != "0" ]] && command="$command --desired-peer-cache-node-vm-count $DESIRED_PEER_CACHE_NODE_VM_COUNT "
         [[ -n $DESIRED_PRIVATE_NODE_COUNT && $DESIRED_PRIVATE_NODE_COUNT != "0" ]] && command="$command --desired-private-node-count $DESIRED_PRIVATE_NODE_COUNT "
         [[ -n $DESIRED_PRIVATE_NODE_VM_COUNT && $DESIRED_PRIVATE_NODE_VM_COUNT != "0" ]] && command="$command --desired-private-node-vm-count $DESIRED_PRIVATE_NODE_VM_COUNT "
         [[ -n $DESIRED_UPLOADERS_COUNT && $DESIRED_UPLOADERS_COUNT != "0" ]] && command="$command --desired-uploaders-count $DESIRED_UPLOADERS_COUNT "
         [[ -n $DESIRED_UPLOADER_VM_COUNT && $DESIRED_UPLOADER_VM_COUNT != "0" ]] && command="$command --desired-uploader-vm-count $DESIRED_UPLOADER_VM_COUNT "
-        [[ -n $DOWNLOADERS_COUNT && $DOWNLOADERS_COUNT != "0" ]] && command="$command --downloaders-count $DOWNLOADERS_COUNT "
         [[ $INFRA_ONLY == "true" ]] && command="$command --infra-only "
         [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
         [[ -n $MAX_ARCHIVED_LOG_FILES ]] && command="$command --max-archived-log-files $MAX_ARCHIVED_LOG_FILES "
