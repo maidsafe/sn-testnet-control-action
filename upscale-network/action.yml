@@ -35,6 +35,9 @@ inputs:
     description: Number of uploader VMs to be deployed
   desired-uploaders-count:
     description: Number of uploaders to run per VM
+  funding-wallet-secret-key:
+    description: Secret key for the funding wallet
+    required: false
   infra-only:
     description: Only run the terraform part to upscale the machines
     default: false
@@ -79,6 +82,7 @@ runs:
         DESIRED_PRIVATE_NODE_VM_COUNT: ${{ inputs.private-node-vm-count }}
         DESIRED_UPLOADERS_COUNT: ${{ inputs.uploaders-count }}
         DESIRED_UPLOADER_VM_COUNT: ${{ inputs.uploader-vm-count }}
+        FUNDING_WALLET_SECRET_KEY: ${{ inputs.funding-wallet-secret-key }}
         INFRA_ONLY: ${{ inputs.infra-only }}
         INTERVAL: ${{ inputs.interval }}
         MAX_ARCHIVED_LOG_FILES: ${{ inputs.max-archived-log-files }}
@@ -109,6 +113,7 @@ runs:
         [[ -n $DESIRED_PRIVATE_NODE_VM_COUNT && $DESIRED_PRIVATE_NODE_VM_COUNT != "0" ]] && command="$command --desired-private-node-vm-count $DESIRED_PRIVATE_NODE_VM_COUNT "
         [[ -n $DESIRED_UPLOADERS_COUNT && $DESIRED_UPLOADERS_COUNT != "0" ]] && command="$command --desired-uploaders-count $DESIRED_UPLOADERS_COUNT "
         [[ -n $DESIRED_UPLOADER_VM_COUNT && $DESIRED_UPLOADER_VM_COUNT != "0" ]] && command="$command --desired-uploader-vm-count $DESIRED_UPLOADER_VM_COUNT "
+        [[ -n $FUNDING_WALLET_SECRET_KEY ]] && command="$command --funding-wallet-secret-key $FUNDING_WALLET_SECRET_KEY "
         [[ $INFRA_ONLY == "true" ]] && command="$command --infra-only "
         [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
         [[ -n $MAX_ARCHIVED_LOG_FILES ]] && command="$command --max-archived-log-files $MAX_ARCHIVED_LOG_FILES "
