@@ -12,6 +12,13 @@ inputs:
   antnode-version:
     description: Version of safenode to use for any new nodes
     required: false
+  autonomi-branch:
+    description: >
+      Build binaries from the specified autonomi branch. The testnet will use these binaries.
+  autonomi-repo-owner:
+    description: >
+      Build binaries from the autonomi repository owned by this org or username. The testnet
+      will use these binaries.
   bootstrap-node-count:
     description: Number of node services to run on each bootstrap node VM
   bootstrap-node-vm-count:
@@ -65,6 +72,8 @@ runs:
         ANT_VERSION: ${{ inputs.ant-version }}
         ANTCTL_VERSION: ${{ inputs.antctl-version }}
         ANTNODE_VERSION: ${{ inputs.antnode-version }}
+        AUTONOMI_BRANCH: ${{ inputs.autonomi-branch }}
+        AUTONOMI_REPO_OWNER: ${{ inputs.autonomi-repo-owner }}
         DESIRED_BOOTSTRAP_NODE_COUNT: ${{ inputs.bootstrap-node-count }}
         DESIRED_BOOTSTRAP_NODE_VM_COUNT: ${{ inputs.bootstrap-node-vm-count }}
         DESIRED_NODE_COUNT: ${{ inputs.node-count }}
@@ -94,6 +103,8 @@ runs:
         [[ -n $ANT_VERSION ]] && command="$command --ant-version $ANT_VERSION "
         [[ -n $ANTCTL_VERSION ]] && command="$command --antctl-version $ANTCTL_VERSION "
         [[ -n $ANTNODE_VERSION ]] && command="$command --antnode-version $ANTNODE_VERSION "
+        [[ -n $AUTONOMI_BRANCH ]] && command="$command --branch $AUTONOMI_BRANCH "
+        [[ -n $AUTONOMI_REPO_OWNER ]] && command="$command --repo-owner $AUTONOMI_REPO_OWNER "
         [[ -n $DESIRED_BOOTSTRAP_NODE_COUNT && $DESIRED_BOOTSTRAP_NODE_COUNT != "0" ]] && command="$command --desired-bootstrap-node-count $DESIRED_BOOTSTRAP_NODE_COUNT "
         [[ -n $DESIRED_BOOTSTRAP_NODE_VM_COUNT && $DESIRED_BOOTSTRAP_NODE_VM_COUNT != "0" ]] && command="$command --desired-bootstrap-node-vm-count $DESIRED_BOOTSTRAP_NODE_VM_COUNT "
         [[ -n $DESIRED_NODE_COUNT && $DESIRED_NODE_COUNT != "0" ]] && command="$command --desired-node-count $DESIRED_NODE_COUNT "
