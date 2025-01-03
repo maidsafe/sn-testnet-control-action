@@ -74,14 +74,14 @@ runs:
         ANTNODE_VERSION: ${{ inputs.antnode-version }}
         AUTONOMI_BRANCH: ${{ inputs.autonomi-branch }}
         AUTONOMI_REPO_OWNER: ${{ inputs.autonomi-repo-owner }}
-        DESIRED_NODE_COUNT: ${{ inputs.node-count }}
-        DESIRED_NODE_VM_COUNT: ${{ inputs.node-vm-count }}
-        DESIRED_PEER_CACHE_NODE_COUNT: ${{ inputs.peer-cache-node-count }}
-        DESIRED_PEER_CACHE_NODE_VM_COUNT: ${{ inputs.peer-cache-node-vm-count }}
-        DESIRED_PRIVATE_NODE_COUNT: ${{ inputs.private-node-count }}
-        DESIRED_PRIVATE_NODE_VM_COUNT: ${{ inputs.private-node-vm-count }}
-        DESIRED_UPLOADERS_COUNT: ${{ inputs.uploaders-count }}
-        DESIRED_UPLOADER_VM_COUNT: ${{ inputs.uploader-vm-count }}
+        DESIRED_NODE_COUNT: ${{ inputs.desired-node-count }}
+        DESIRED_NODE_VM_COUNT: ${{ inputs.desired-node-vm-count }}
+        DESIRED_PEER_CACHE_NODE_COUNT: ${{ inputs.desired-peer-cache-node-count }}
+        DESIRED_PEER_CACHE_NODE_VM_COUNT: ${{ inputs.desired-peer-cache-node-vm-count }}
+        DESIRED_PRIVATE_NODE_COUNT: ${{ inputs.desired-private-node-count }}
+        DESIRED_PRIVATE_NODE_VM_COUNT: ${{ inputs.desired-private-node-vm-count }}
+        DESIRED_UPLOADERS_COUNT: ${{ inputs.desired-uploaders-count }}
+        DESIRED_UPLOADER_VM_COUNT: ${{ inputs.desired-uploader-vm-count }}
         FUNDING_WALLET_SECRET_KEY: ${{ inputs.funding-wallet-secret-key }}
         INFRA_ONLY: ${{ inputs.infra-only }}
         INTERVAL: ${{ inputs.interval }}
