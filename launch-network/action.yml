@@ -55,6 +55,8 @@ inputs:
     description: Maximum number of archived log files to keep for each service
   max-log-files:
     description: Maximum number of log files to keep for each service
+  nat-gateway-vm-size:
+    description: The size of the NAT gateway VM
   network-contacts-file-name:
     description: Provide a name for the network contacts file
   network-id:
@@ -136,6 +138,7 @@ runs:
         LOG_FORMAT: ${{ inputs.log-format }}
         MAX_ARCHIVED_LOG_FILES: ${{ inputs.max-archived-log-files }}
         MAX_LOG_FILES: ${{ inputs.max-log-files }}
+        NAT_GATEWAY_VM_SIZE: ${{ inputs.nat-gateway-vm-size }}
         NETWORK_CONTACTS_FILE_NAME: ${{ inputs.network-contacts-file-name }}
         NETWORK_ID: ${{ inputs.network-id }}
         NETWORK_NAME: ${{ inputs.network-name }}
@@ -187,6 +190,7 @@ runs:
         [[ -n $LOG_FORMAT ]] && command="$command --log-format $LOG_FORMAT "
         [[ -n $MAX_ARCHIVED_LOG_FILES ]] && command="$command --max-archived-log-files $MAX_ARCHIVED_LOG_FILES "
         [[ -n $MAX_LOG_FILES ]] && command="$command --max-log-files $MAX_LOG_FILES "
+        [[ -n $NAT_GATEWAY_VM_SIZE ]] && command="$command --nat-gateway-vm-size $NAT_GATEWAY_VM_SIZE "
         [[ -n $NETWORK_CONTACTS_FILE_NAME ]] && command="$command --network-contacts-file-name $NETWORK_CONTACTS_FILE_NAME "
         [[ -n $NETWORK_ID ]] && command="$command --network-id $NETWORK_ID "
         [[ -n $NODE_COUNT ]] && command="$command --node-count $NODE_COUNT "
