@@ -63,6 +63,9 @@ runs:
       run: |
         set -e
 
+        # This is useful to obtain information on what providers are being used.
+        terraform version
+
         mkdir ~/.ssh
         echo "${{ inputs.ssh-secret-key }}" >> ~/.ssh/id_rsa
         chmod 0400 ~/.ssh/id_rsa
