@@ -246,7 +246,7 @@ runs:
     - name: Set ANT_PEERS and ANT_INVENTORY
       shell: bash
       run: |
-        inventory_path=/home/runner/.local/share/safe/testnet-deploy/"${{ inputs.network-name }}"-inventory.json
+        inventory_path=/home/runner/.local/share/autonomi/testnet-deploy/"${{ inputs.network-name }}"-inventory.json
         echo "Inventory Path: $inventory_path"
         genesis_multiaddr=$(jq -r '.genesis_multiaddr' $inventory_path)
         echo "ANT_PEERS=$genesis_multiaddr" >> $GITHUB_ENV
