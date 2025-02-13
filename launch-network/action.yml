@@ -47,6 +47,14 @@ inputs:
     description: The address of the EVM payment token contract
   evm-rpc-url:
     description: The RPC URL for the EVM network when using a custom network type
+  full-cone-private-nat-gateway-vm-size:
+    description: The size of the NAT gateway VM for full cone private nodes
+  full-cone-private-node-count:
+    description: Number of node services to run on each full cone private node VM
+  full-cone-private-node-vm-count:
+    description: Number of full cone private node VMs to be deployed
+  full-cone-private-node-volume-size:
+    description: The size of the volumes for full cone private node VMs in GB
   initial-gas:
     description: Override the default initial gas amount for uploaders
   initial-tokens:
@@ -87,12 +95,6 @@ inputs:
     description: The size of the peer cache node VMs
   peer-cache-node-volume-size:
     description: The size of the volumes for peer cache node VMs in GB
-  private-node-count:
-    description: Number of node services to run on each private node VM
-  private-node-vm-count:
-    description: Number of private node VMs to be deployed
-  private-node-volume-size:
-    description: The size of the volumes for private node VMs in GB
   protocol-version:
     description: The network protocol version can be set to 'restricted' or any custom version string.
   provider:
@@ -105,6 +107,14 @@ inputs:
   rewards-address:
     description: The rewards address for each safenode service.
     required: true
+  symmetric-private-nat-gateway-vm-size:
+    description: The size of the NAT gateway VM for symmetric private nodes
+  symmetric-private-node-count:
+    description: Number of node services to run on each symmetric private node VM
+  symmetric-private-node-vm-count:
+    description: Number of symmetric private node VMs to be deployed
+  symmetric-private-node-volume-size:
+    description: The size of the volumes for symmetric private node VMs in GB
   uploader-vm-count:
     description: Number of uploader VMs to be deployed
   uploader-vm-size:
@@ -138,6 +148,10 @@ runs:
         EVM_NODE_VM_SIZE: ${{ inputs.evm-node-vm-size }}
         EVM_PAYMENT_TOKEN_ADDRESS: ${{ inputs.evm-payment-token-address }}
         EVM_RPC_URL: ${{ inputs.evm-rpc-url }}
+        FULL_CONE_PRIVATE_NAT_GATEWAY_VM_SIZE: ${{ inputs.full-cone-private-nat-gateway-vm-size }}
+        FULL_CONE_PRIVATE_NODE_COUNT: ${{ inputs.full-cone-private-node-count }}
+        FULL_CONE_PRIVATE_NODE_VM_COUNT: ${{ inputs.full-cone-private-node-vm-count }}
+        FULL_CONE_PRIVATE_NODE_VOLUME_SIZE: ${{ inputs.full-cone-private-node-volume-size }}
         INITIAL_GAS: ${{ inputs.initial-gas }}
         INITIAL_TOKENS: ${{ inputs.initial-tokens }}
         INTERVAL: ${{ inputs.interval }}
@@ -156,14 +170,15 @@ runs:
         PEER_CACHE_NODE_VM_COUNT: ${{ inputs.peer-cache-node-vm-count }}
         PEER_CACHE_NODE_VM_SIZE: ${{ inputs.peer-cache-node-vm-size }}
         PEER_CACHE_NODE_VOLUME_SIZE: ${{ inputs.peer-cache-node-volume-size }}
-        PRIVATE_NODE_COUNT: ${{ inputs.private-node-count }}
-        PRIVATE_NODE_VM_COUNT: ${{ inputs.private-node-vm-count }}
-        PRIVATE_NODE_VOLUME_SIZE: ${{ inputs.private-node-volume-size }}
         PROTOCOL_VERSION: ${{ inputs.protocol-version }}
         PROVIDER: ${{ inputs.provider }}
         PUBLIC_RPC: ${{ inputs.public-rpc }}
         RUST_LOG: ${{ inputs.rust-log }}
         REWARDS_ADDRESS: ${{ inputs.rewards-address }}
+        SYMMETRIC_PRIVATE_NAT_GATEWAY_VM_SIZE: ${{ inputs.symmetric-private-nat-gateway-vm-size }}
+        SYMMETRIC_PRIVATE_NODE_COUNT: ${{ inputs.symmetric-private-node-count }}
+        SYMMETRIC_PRIVATE_NODE_VM_COUNT: ${{ inputs.symmetric-private-node-vm-count }}
+        SYMMETRIC_PRIVATE_NODE_VOLUME_SIZE: ${{ inputs.symmetric-private-node-volume-size }}
         UPLOADER_VM_COUNT: ${{ inputs.uploader-vm-count }}
         UPLOADER_VM_SIZE: ${{ inputs.uploader-vm-size }}
         UPLOADERS_COUNT: ${{ inputs.uploaders-count }}
@@ -192,6 +207,10 @@ runs:
         [[ -n $EVM_NODE_VM_SIZE ]] && command="$command --evm-node-vm-size $EVM_NODE_VM_SIZE "
         [[ -n $EVM_PAYMENT_TOKEN_ADDRESS ]] && command="$command --evm-payment-token-address $EVM_PAYMENT_TOKEN_ADDRESS "
         [[ -n $EVM_RPC_URL ]] && command="$command --evm-rpc-url \"$EVM_RPC_URL\" "
+        [[ -n $FULL_CONE_PRIVATE_NAT_GATEWAY_VM_SIZE ]] && command="$command --full-cone-private-nat-gateway-vm-size $FULL_CONE_PRIVATE_NAT_GATEWAY_VM_SIZE "
+        [[ -n $FULL_CONE_PRIVATE_NODE_COUNT ]] && command="$command --full-cone-private-node-count $FULL_CONE_PRIVATE_NODE_COUNT "
+        [[ -n $FULL_CONE_PRIVATE_NODE_VM_COUNT ]] && command="$command --full-cone-private-node-vm-count $FULL_CONE_PRIVATE_NODE_VM_COUNT "
+        [[ -n $FULL_CONE_PRIVATE_NODE_VOLUME_SIZE ]] && command="$command --full-cone-private-node-volume-size $FULL_CONE_PRIVATE_NODE_VOLUME_SIZE "
         [[ -n $INITIAL_GAS ]] && command="$command --initial-gas $INITIAL_GAS "
         [[ -n $INITIAL_TOKENS ]] && command="$command --initial-tokens $INITIAL_TOKENS "
         [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
@@ -209,12 +228,13 @@ runs:
         [[ -n $PEER_CACHE_NODE_VM_COUNT ]] && command="$command --peer-cache-node-vm-count $PEER_CACHE_NODE_VM_COUNT "
         [[ -n $PEER_CACHE_NODE_VM_SIZE ]] && command="$command --peer-cache-node-vm-size $PEER_CACHE_NODE_VM_SIZE "
         [[ -n $PEER_CACHE_NODE_VOLUME_SIZE ]] && command="$command --peer-cache-node-volume-size $PEER_CACHE_NODE_VOLUME_SIZE "
-        [[ -n $PRIVATE_NODE_COUNT ]] && command="$command --private-node-count $PRIVATE_NODE_COUNT "
-        [[ -n $PRIVATE_NODE_VM_COUNT ]] && command="$command --private-node-vm-count $PRIVATE_NODE_VM_COUNT "
-        [[ -n $PRIVATE_NODE_VOLUME_SIZE ]] && command="$command --private-node-volume-size $PRIVATE_NODE_VOLUME_SIZE "
         [[ -n $PROTOCOL_VERSION ]] && command="$command --protocol-version $PROTOCOL_VERSION "
         [[ $PUBLIC_RPC == "true" ]] && command="$command --public-rpc "
         [[ -n $REWARDS_ADDRESS ]] && command="$command --rewards-address $REWARDS_ADDRESS "
+        [[ -n $SYMMETRIC_PRIVATE_NAT_GATEWAY_VM_SIZE ]] && command="$command --symmetric-private-nat-gateway-vm-size $SYMMETRIC_PRIVATE_NAT_GATEWAY_VM_SIZE "
+        [[ -n $SYMMETRIC_PRIVATE_NODE_COUNT ]] && command="$command --symmetric-private-node-count $SYMMETRIC_PRIVATE_NODE_COUNT "
+        [[ -n $SYMMETRIC_PRIVATE_NODE_VM_COUNT ]] && command="$command --symmetric-private-node-vm-count $SYMMETRIC_PRIVATE_NODE_VM_COUNT "
+        [[ -n $SYMMETRIC_PRIVATE_NODE_VOLUME_SIZE ]] && command="$command --symmetric-private-node-volume-size $SYMMETRIC_PRIVATE_NODE_VOLUME_SIZE "
         [[ -n $UPLOADER_VM_COUNT ]] && command="$command --uploader-vm-count $UPLOADER_VM_COUNT "
         [[ -n $UPLOADER_VM_SIZE ]] && command="$command --uploader-vm-size $UPLOADER_VM_SIZE "
         [[ -n $UPLOADERS_COUNT ]] && command="$command --uploaders-count $UPLOADERS_COUNT "
