@@ -1,0 +1,25 @@
+name: Provision Infrastructure
+description: Run Ansible provisioning for a pre-existing environment
+inputs:
+  name:
+    description: The name of the environment
+    required: true
+  subcommand:
+    description: >
+      The provisioning subcommand to run. Valid values:
+      generic-nodes, peer-cache-nodes, full-cone-private-nodes, symmetric-private-nodes, uploaders
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: provision
+      env:
+        NETWORK_NAME: ${{ inputs.name }}
+        PROVISION_SUBCOMMAND: ${{ inputs.subcommand }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        testnet-deploy provision $PROVISION_SUBCOMMAND --name $NETWORK_NAME
