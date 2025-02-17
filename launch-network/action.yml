@@ -121,6 +121,9 @@ inputs:
     description: The size of the uploader VMs
   uploaders-count:
     description: Number of uploaders to run per VM
+  to-genesis:
+    description: If set the deploy will only run to the point of provisioning the genesis node
+    default: false
   wallet-secret-key:
       description: >
         A wallet secret key for the uploaders.
@@ -182,6 +185,7 @@ runs:
         UPLOADER_VM_COUNT: ${{ inputs.uploader-vm-count }}
         UPLOADER_VM_SIZE: ${{ inputs.uploader-vm-size }}
         UPLOADERS_COUNT: ${{ inputs.uploaders-count }}
+        TO_GENESIS: ${{ inputs.to-genesis }}
         WALLET_SECRET_KEY: ${{ inputs.wallet-secret-key }}
       shell: bash
       run: |
@@ -238,6 +242,7 @@ runs:
         [[ -n $UPLOADER_VM_COUNT ]] && command="$command --uploader-vm-count $UPLOADER_VM_COUNT "
         [[ -n $UPLOADER_VM_SIZE ]] && command="$command --uploader-vm-size $UPLOADER_VM_SIZE "
         [[ -n $UPLOADERS_COUNT ]] && command="$command --uploaders-count $UPLOADERS_COUNT "
+        [[ -n $TO_GENESIS ]] && command="$command --to-genesis "
         [[ -n $WALLET_SECRET_KEY ]] && command="$command --funding-wallet-secret-key $WALLET_SECRET_KEY "
 
         echo "Will run testnet-deploy with: $command"
