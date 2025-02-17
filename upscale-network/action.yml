@@ -19,6 +19,10 @@ inputs:
     description: >
       Build binaries from the autonomi repository owned by this org or username. The testnet
       will use these binaries.
+  desired-full-cone-private-node-count:
+    description: Number of node services to run on each full-cone private node VM
+  desired-full-cone-private-node-vm-count:
+    description: Number of full-cone private node VMs to be deployed
   desired-node-count:
     description: Number of node services to run on each node VM
   desired-node-vm-count:
@@ -27,10 +31,10 @@ inputs:
     description: Number of node services to run on each peer cache node VM
   desired-peer-cache-node-vm-count:
     description: Number of peer cache node VMs to be deployed
-  desired-private-node-count:
-    description: Number of node services to run on each private node VM
-  desired-private-node-vm-count:
-    description: Number of private node VMs to be deployed
+  desired-symmetric-private-node-count:
+    description: Number of node services to run on each symmetric private node VM
+  desired-symmetric-private-node-vm-count:
+    description: Number of symmetric private node VMs to be deployed
   desired-uploader-vm-count:
     description: Number of uploader VMs to be deployed
   desired-uploaders-count:
@@ -74,12 +78,14 @@ runs:
         ANTNODE_VERSION: ${{ inputs.antnode-version }}
         AUTONOMI_BRANCH: ${{ inputs.autonomi-branch }}
         AUTONOMI_REPO_OWNER: ${{ inputs.autonomi-repo-owner }}
+        DESIRED_FULL_CONE_PRIVATE_NODE_COUNT: ${{ inputs.desired-full-cone-private-node-count }}
+        DESIRED_FULL_CONE_PRIVATE_NODE_VM_COUNT: ${{ inputs.desired-full-cone-private-node-vm-count }}
         DESIRED_NODE_COUNT: ${{ inputs.desired-node-count }}
         DESIRED_NODE_VM_COUNT: ${{ inputs.desired-node-vm-count }}
         DESIRED_PEER_CACHE_NODE_COUNT: ${{ inputs.desired-peer-cache-node-count }}
         DESIRED_PEER_CACHE_NODE_VM_COUNT: ${{ inputs.desired-peer-cache-node-vm-count }}
-        DESIRED_PRIVATE_NODE_COUNT: ${{ inputs.desired-private-node-count }}
-        DESIRED_PRIVATE_NODE_VM_COUNT: ${{ inputs.desired-private-node-vm-count }}
+        DESIRED_SYMMETRIC_PRIVATE_NODE_COUNT: ${{ inputs.desired-symmetric-private-node-count }}
+        DESIRED_SYMMETRIC_PRIVATE_NODE_VM_COUNT: ${{ inputs.desired-symmetric-private-node-vm-count }}
         DESIRED_UPLOADERS_COUNT: ${{ inputs.desired-uploaders-count }}
         DESIRED_UPLOADER_VM_COUNT: ${{ inputs.desired-uploader-vm-count }}
         FUNDING_WALLET_SECRET_KEY: ${{ inputs.funding-wallet-secret-key }}
@@ -105,12 +111,14 @@ runs:
         [[ -n $ANTNODE_VERSION ]] && command="$command --antnode-version $ANTNODE_VERSION "
         [[ -n $AUTONOMI_BRANCH ]] && command="$command --branch $AUTONOMI_BRANCH "
         [[ -n $AUTONOMI_REPO_OWNER ]] && command="$command --repo-owner $AUTONOMI_REPO_OWNER "
+        [[ -n $DESIRED_FULL_CONE_PRIVATE_NODE_COUNT && $DESIRED_FULL_CONE_PRIVATE_NODE_COUNT != "0" ]] && command="$command --desired-full-cone-private-node-count $DESIRED_FULL_CONE_PRIVATE_NODE_COUNT "
+        [[ -n $DESIRED_FULL_CONE_PRIVATE_NODE_VM_COUNT && $DESIRED_FULL_CONE_PRIVATE_NODE_VM_COUNT != "0" ]] && command="$command --desired-full-cone-private-node-vm-count $DESIRED_FULL_CONE_PRIVATE_NODE_VM_COUNT "
         [[ -n $DESIRED_NODE_COUNT && $DESIRED_NODE_COUNT != "0" ]] && command="$command --desired-node-count $DESIRED_NODE_COUNT "
         [[ -n $DESIRED_NODE_VM_COUNT && $DESIRED_NODE_VM_COUNT != "0" ]] && command="$command --desired-node-vm-count $DESIRED_NODE_VM_COUNT "
         [[ -n $DESIRED_PEER_CACHE_NODE_COUNT && $DESIRED_PEER_CACHE_NODE_COUNT != "0" ]] && command="$command --desired-peer-cache-node-count $DESIRED_PEER_CACHE_NODE_COUNT "
         [[ -n $DESIRED_PEER_CACHE_NODE_VM_COUNT && $DESIRED_PEER_CACHE_NODE_VM_COUNT != "0" ]] && command="$command --desired-peer-cache-node-vm-count $DESIRED_PEER_CACHE_NODE_VM_COUNT "
-        [[ -n $DESIRED_PRIVATE_NODE_COUNT && $DESIRED_PRIVATE_NODE_COUNT != "0" ]] && command="$command --desired-private-node-count $DESIRED_PRIVATE_NODE_COUNT "
-        [[ -n $DESIRED_PRIVATE_NODE_VM_COUNT && $DESIRED_PRIVATE_NODE_VM_COUNT != "0" ]] && command="$command --desired-private-node-vm-count $DESIRED_PRIVATE_NODE_VM_COUNT "
+        [[ -n $DESIRED_SYMMETRIC_PRIVATE_NODE_COUNT && $DESIRED_SYMMETRIC_PRIVATE_NODE_COUNT != "0" ]] && command="$command --desired-symmetric-private-node-count $DESIRED_SYMMETRIC_PRIVATE_NODE_COUNT "
+        [[ -n $DESIRED_SYMMETRIC_PRIVATE_NODE_VM_COUNT && $DESIRED_SYMMETRIC_PRIVATE_NODE_VM_COUNT != "0" ]] && command="$command --desired-symmetric-private-node-vm-count $DESIRED_SYMMETRIC_PRIVATE_NODE_VM_COUNT "
         [[ -n $DESIRED_UPLOADERS_COUNT && $DESIRED_UPLOADERS_COUNT != "0" ]] && command="$command --desired-uploaders-count $DESIRED_UPLOADERS_COUNT "
         [[ -n $DESIRED_UPLOADER_VM_COUNT && $DESIRED_UPLOADER_VM_COUNT != "0" ]] && command="$command --desired-uploader-vm-count $DESIRED_UPLOADER_VM_COUNT "
         [[ -n $FUNDING_WALLET_SECRET_KEY ]] && command="$command --funding-wallet-secret-key $FUNDING_WALLET_SECRET_KEY "
