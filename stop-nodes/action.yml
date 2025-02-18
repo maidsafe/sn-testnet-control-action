@@ -22,6 +22,10 @@ inputs:
       Specify the type of node VM to stop the safenode services on. If not provided, the safenode services on
       all the node VMs will be stopped. Valid values are "bootstrap", "genesis", "generic" and "private".
       Cannot be used with the custom-inventory input.
+  service-names:
+    description: >
+      Specify specific services to stop. Should be a comma-separated list.
+      Each value will be passed as a --service-name argument.
 
 runs:
   using: composite
@@ -34,6 +38,7 @@ runs:
         INTERVAL: ${{ inputs.interval }}
         NETWORK_NAME: ${{ inputs.network-name }}
         NODE_TYPE: ${{ inputs.node-type }}
+        SERVICE_NAMES: ${{ inputs.service-names }}
       shell: bash
       run: |
         set -e
@@ -49,6 +54,13 @@ runs:
           IFS=',' read -ra VM_NAMES <<< "$CUSTOM_INVENTORY"
           for vm_name in "${VM_NAMES[@]}"; do
             command="$command --custom-inventory $vm_name"
+          done
+        fi
+
+        if [[ -n $SERVICE_NAMES ]]; then
+          IFS=',' read -ra SERVICES <<< "$SERVICE_NAMES"
+          for service in "${SERVICES[@]}"; do
+            command="$command --service-name $service"
           done
         fi
 
