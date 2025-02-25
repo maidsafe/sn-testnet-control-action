@@ -25,6 +25,9 @@ inputs:
     description: >
       Specify the chunk size in bytes as a 64-bit integer.
       Only applies when building a custom branch.
+  disable-telegraf:
+    description: Disable Telegraf metrics collection if set to true
+    default: false
   downloaders-count:
     description: Number of downloader services to run
     default: '0'
@@ -143,6 +146,7 @@ runs:
         AUTONOMI_BRANCH: ${{ inputs.autonomi-branch }}
         AUTONOMI_REPO_OWNER: ${{ inputs.autonomi-repo-owner }}
         CHUNK_SIZE: ${{ inputs.chunk-size }}
+        DISABLE_TELEGRAF: ${{ inputs.disable-telegraf }}
         DOWNLOADERS_COUNT: ${{ inputs.downloaders-count }}
         ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
         ENVIRONMENT_VARS: ${{ inputs.environment-vars }}
@@ -204,6 +208,7 @@ runs:
         [[ -n $AUTONOMI_BRANCH ]] && command="$command --branch $AUTONOMI_BRANCH "
         [[ -n $AUTONOMI_REPO_OWNER ]] && command="$command --repo-owner $AUTONOMI_REPO_OWNER "
         [[ -n $CHUNK_SIZE ]] && command="$command --chunk-size $CHUNK_SIZE "
+        [[ $DISABLE_TELEGRAF == "true" ]] && command="$command --disable-telegraf "
         [[ $DOWNLOADERS_COUNT -gt 0 ]] && command="$command --downloaders-count $DOWNLOADERS_COUNT "
         [[ -n $ENVIRONMENT_VARS ]] && command="$command --env $ENVIRONMENT_VARS "
         [[ -n $EVM_DATA_PAYMENTS_ADDRESS ]] && command="$command --evm-data-payments-address $EVM_DATA_PAYMENTS_ADDRESS "
