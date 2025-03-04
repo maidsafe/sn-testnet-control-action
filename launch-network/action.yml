@@ -25,6 +25,8 @@ inputs:
     description: >
       Specify the chunk size in bytes as a 64-bit integer.
       Only applies when building a custom branch.
+  client-env:
+    description: Pass a comma-separated list of environment variables to the ant binary
   disable-telegraf:
     description: Disable Telegraf metrics collection if set to true
     default: false
@@ -36,8 +38,6 @@ inputs:
       Possible values are 'development', 'staging' and 'production'. This value determines the sizes
       and counts of VMs. The counts can be overridden with the other count inputs.
     required: true
-  environment-vars:
-    description: Pass a comma-separated list of environment variables to safenode services
   evm-data-payments-address:
     description: The address of the EVM data payments contract
   evm-network-type:
@@ -84,6 +84,8 @@ inputs:
     required: true
   node-count:
     description: Number of node services to run on each node VM
+  node-env:
+    description: Pass a comma-separated list of environment variables to antnode services
   node-vm-count:
     description: Number of node VMs to be deployed
   node-vm-size:
@@ -146,10 +148,10 @@ runs:
         AUTONOMI_BRANCH: ${{ inputs.autonomi-branch }}
         AUTONOMI_REPO_OWNER: ${{ inputs.autonomi-repo-owner }}
         CHUNK_SIZE: ${{ inputs.chunk-size }}
+        CLIENT_ENV: ${{ inputs.client-env }}
         DISABLE_TELEGRAF: ${{ inputs.disable-telegraf }}
         DOWNLOADERS_COUNT: ${{ inputs.downloaders-count }}
         ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
-        ENVIRONMENT_VARS: ${{ inputs.environment-vars }}
         EVM_DATA_PAYMENTS_ADDRESS: ${{ inputs.evm-data-payments-address }}
         EVM_NETWORK_TYPE: ${{ inputs.evm-network-type }}
         EVM_NODE_VM_SIZE: ${{ inputs.evm-node-vm-size }}
@@ -170,6 +172,7 @@ runs:
         NETWORK_ID: ${{ inputs.network-id }}
         NETWORK_NAME: ${{ inputs.network-name }}
         NODE_COUNT: ${{ inputs.node-count }}
+        NODE_ENV: ${{ inputs.node-env }}
         NODE_VM_COUNT: ${{ inputs.node-vm-count }}
         NODE_VM_SIZE: ${{ inputs.node-vm-size }}
         NODE_VOLUME_SIZE: ${{ inputs.node-volume-size }}
@@ -208,9 +211,9 @@ runs:
         [[ -n $AUTONOMI_BRANCH ]] && command="$command --branch $AUTONOMI_BRANCH "
         [[ -n $AUTONOMI_REPO_OWNER ]] && command="$command --repo-owner $AUTONOMI_REPO_OWNER "
         [[ -n $CHUNK_SIZE ]] && command="$command --chunk-size $CHUNK_SIZE "
+        [[ -n $CLIENT_ENV ]] && command="$command --client-env $CLIENT_ENV "
         [[ $DISABLE_TELEGRAF == "true" ]] && command="$command --disable-telegraf "
         [[ $DOWNLOADERS_COUNT -gt 0 ]] && command="$command --downloaders-count $DOWNLOADERS_COUNT "
-        [[ -n $ENVIRONMENT_VARS ]] && command="$command --env $ENVIRONMENT_VARS "
         [[ -n $EVM_DATA_PAYMENTS_ADDRESS ]] && command="$command --evm-data-payments-address $EVM_DATA_PAYMENTS_ADDRESS "
         [[ -n $EVM_NETWORK_TYPE ]] && command="$command --evm-network-type $EVM_NETWORK_TYPE "
         [[ -n $EVM_NODE_VM_SIZE ]] && command="$command --evm-node-vm-size $EVM_NODE_VM_SIZE "
@@ -230,6 +233,7 @@ runs:
         [[ -n $NETWORK_CONTACTS_FILE_NAME ]] && command="$command --network-contacts-file-name $NETWORK_CONTACTS_FILE_NAME "
         [[ -n $NETWORK_ID ]] && command="$command --network-id $NETWORK_ID "
         [[ -n $NODE_COUNT ]] && command="$command --node-count $NODE_COUNT "
+        [[ -n $NODE_ENV ]] && command="$command --node-env $NODE_ENV "
         [[ -n $NODE_VM_COUNT ]] && command="$command --node-vm-count $NODE_VM_COUNT "
         [[ -n $NODE_VM_SIZE ]] && command="$command --node-vm-size $NODE_VM_SIZE "
         [[ -n $NODE_VOLUME_SIZE ]] && command="$command --node-volume-size $NODE_VOLUME_SIZE "
