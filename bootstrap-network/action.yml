@@ -38,6 +38,10 @@ inputs:
     description: The address of the EVM payment token contract
   evm-rpc-url:
     description: The RPC URL for the EVM network
+  full-cone-private-node-count:
+    description: Number of node services to run on each full cone private node VM
+  full-cone-private-node-vm-count:
+    description: Number of full cone private node VMs to be deployed
   interval:
     description: The interval to apply between each node startup. Units are ms. The default is 200.
   log-format:
@@ -60,15 +64,15 @@ inputs:
   peer:
     description: A peer from the network to bootstrap from. Should be in multiaddr format.
     required: true
-  private-node-count:
-    description: Number of node services to run on each private node VM
-  private-node-vm-count:
-    description: Number of private node VMs to be deployed
   provider:
     description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
     required: true
   rewards-address:
     description: The address for receiving network rewards
+  symmetric-private-node-count:
+    description: Number of node services to run on each symmetric private node VM
+  symmetric-private-node-vm-count:
+    description: Number of symmetric private node VMs to be deployed
 
 runs:
   using: composite
@@ -89,6 +93,8 @@ runs:
         EVM_NETWORK_TYPE: ${{ inputs.evm-network-type }}
         EVM_PAYMENT_TOKEN_ADDRESS: ${{ inputs.evm-payment-token-address }}
         EVM_RPC_URL: ${{ inputs.evm-rpc-url }}
+        FULL_CONE_PRIVATE_NODE_COUNT: ${{ inputs.full-cone-private-node-count }}
+        FULL_CONE_PRIVATE_NODE_VM_COUNT: ${{ inputs.full-cone-private-node-vm-count }}
         INTERVAL: ${{ inputs.interval }}
         LOG_FORMAT: ${{ inputs.log-format }}
         MAX_ARCHIVED_LOG_FILES: ${{ inputs.max-archived-log-files }}
@@ -99,10 +105,10 @@ runs:
         NODE_VM_COUNT: ${{ inputs.node-vm-count }}
         NODE_VM_SIZE: ${{ inputs.node-vm-size }}
         PEER: ${{ inputs.peer }}
-        PRIVATE_NODE_COUNT: ${{ inputs.private-node-count }}
-        PRIVATE_NODE_VM_COUNT: ${{ inputs.private-node-vm-count }}
         PROVIDER: ${{ inputs.provider }}
         REWARDS_ADDRESS: ${{ inputs.rewards-address }}
+        SYMMETRIC_PRIVATE_NODE_COUNT: ${{ inputs.symmetric-private-node-count }}
+        SYMMETRIC_PRIVATE_NODE_VM_COUNT: ${{ inputs.symmetric-private-node-vm-count }}
       shell: bash
       run: |
         set -e
@@ -126,6 +132,8 @@ runs:
         [[ -n $EVM_NETWORK_TYPE ]] && command="$command --evm-network-type $EVM_NETWORK_TYPE "
         [[ -n $EVM_PAYMENT_TOKEN_ADDRESS ]] && command="$command --evm-payment-token-address $EVM_PAYMENT_TOKEN_ADDRESS "
         [[ -n $EVM_RPC_URL ]] && command="$command --evm-rpc-url $EVM_RPC_URL "
+        [[ -n $FULL_CONE_PRIVATE_NODE_COUNT ]] && command="$command --full-cone-private-node-count $FULL_CONE_PRIVATE_NODE_COUNT "
+        [[ -n $FULL_CONE_PRIVATE_NODE_VM_COUNT ]] && command="$command --full-cone-private-node-vm-count $FULL_CONE_PRIVATE_NODE_VM_COUNT "
         [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
         [[ -n $LOG_FORMAT ]] && command="$command --log-format $LOG_FORMAT "
         [[ -n $MAX_ARCHIVED_LOG_FILES ]] && command="$command --max-archived-log-files $MAX_ARCHIVED_LOG_FILES "
@@ -134,9 +142,9 @@ runs:
         [[ -n $NODE_COUNT ]] && command="$command --node-count $NODE_COUNT "
         [[ -n $NODE_VM_COUNT ]] && command="$command --node-vm-count $NODE_VM_COUNT "
         [[ -n $NODE_VM_SIZE ]] && command="$command --node-vm-size $NODE_VM_SIZE "
-        [[ -n $PRIVATE_NODE_COUNT ]] && command="$command --private-node-count $PRIVATE_NODE_COUNT "
-        [[ -n $PRIVATE_NODE_VM_COUNT ]] && command="$command --private-node-vm-count $PRIVATE_NODE_VM_COUNT "
         [[ -n $REWARDS_ADDRESS ]] && command="$command --rewards-address $REWARDS_ADDRESS "
+        [[ -n $SYMMETRIC_PRIVATE_NODE_COUNT ]] && command="$command --symmetric-private-node-count $SYMMETRIC_PRIVATE_NODE_COUNT "
+        [[ -n $SYMMETRIC_PRIVATE_NODE_VM_COUNT ]] && command="$command --symmetric-private-node-vm-count $SYMMETRIC_PRIVATE_NODE_VM_COUNT "
 
         echo "Will run testnet-deploy with: $command"
         eval $command
