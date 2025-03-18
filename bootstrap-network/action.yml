@@ -52,6 +52,12 @@ inputs:
     description: Maximum number of log files to keep for each service
   network-contacts-file-name:
     description: Provide a name for the network contacts file
+  network-id:
+    description: >
+      The ID of the original network being bootstrapped from.
+      Must be between 2 and 255 because 1 is reserved for the mainnet.
+    type: number
+    required: true
   network-name:
     description: The name of the testnet.
     required: true
@@ -100,6 +106,7 @@ runs:
         MAX_ARCHIVED_LOG_FILES: ${{ inputs.max-archived-log-files }}
         MAX_LOG_FILES: ${{ inputs.max-log-files }}
         NETWORK_CONTACTS_FILE_NAME: ${{ inputs.network-contacts-file-name }}
+        NETWORK_ID: ${{ inputs.network-id }}
         NETWORK_NAME: ${{ inputs.network-name }}
         NODE_COUNT: ${{ inputs.node-count }}
         NODE_VM_COUNT: ${{ inputs.node-vm-count }}
@@ -139,6 +146,7 @@ runs:
         [[ -n $MAX_ARCHIVED_LOG_FILES ]] && command="$command --max-archived-log-files $MAX_ARCHIVED_LOG_FILES "
         [[ -n $MAX_LOG_FILES ]] && command="$command --max-log-files $MAX_LOG_FILES "
         [[ -n $NETWORK_CONTACTS_FILE_NAME ]] && command="$command --network-contacts-file-name $NETWORK_CONTACTS_FILE_NAME "
+        [[ -n $NETWORK_ID ]] && command="$command --network-id $NETWORK_ID "
         [[ -n $NODE_COUNT ]] && command="$command --node-count $NODE_COUNT "
         [[ -n $NODE_VM_COUNT ]] && command="$command --node-vm-count $NODE_VM_COUNT "
         [[ -n $NODE_VM_SIZE ]] && command="$command --node-vm-size $NODE_VM_SIZE "
