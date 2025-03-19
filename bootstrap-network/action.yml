@@ -51,7 +51,9 @@ inputs:
   max-log-files:
     description: Maximum number of log files to keep for each service
   network-contacts-url:
-    description: Provide the network contacts URL
+    description: >
+      Provide the network contacts URL.
+      Either a peer or the network-contacts-url must be provided.
   network-id:
     description: >
       The ID of the original network being bootstrapped from.
@@ -68,8 +70,9 @@ inputs:
   node-vm-size:
     description: The size of the regular node VMs
   peer:
-    description: A peer from the network to bootstrap from. Should be in multiaddr format.
-    required: true
+    description: >
+      A peer from the network to bootstrap from. Should be in multiaddr format.
+      Either a peer or the network-contacts-url must be provided.
   provider:
     description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
     required: true
@@ -124,7 +127,6 @@ runs:
         command="testnet-deploy bootstrap \
           --name $NETWORK_NAME \
           --environment-type $ENVIRONMENT_TYPE \
-          --peer $PEER \
           --provider $PROVIDER "
         [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
         [[ $ANSIBLE_VERBOSE == "true" ]] && command="$command --ansible-verbose "
@@ -150,6 +152,7 @@ runs:
         [[ -n $NODE_COUNT ]] && command="$command --node-count $NODE_COUNT "
         [[ -n $NODE_VM_COUNT ]] && command="$command --node-vm-count $NODE_VM_COUNT "
         [[ -n $NODE_VM_SIZE ]] && command="$command --node-vm-size $NODE_VM_SIZE "
+        [[ -n $PEER ]] && command="$command --peer $PEER "
         [[ -n $REWARDS_ADDRESS ]] && command="$command --rewards-address $REWARDS_ADDRESS "
         [[ -n $SYMMETRIC_PRIVATE_NODE_COUNT ]] && command="$command --symmetric-private-node-count $SYMMETRIC_PRIVATE_NODE_COUNT "
         [[ -n $SYMMETRIC_PRIVATE_NODE_VM_COUNT ]] && command="$command --symmetric-private-node-vm-count $SYMMETRIC_PRIVATE_NODE_VM_COUNT "
