@@ -50,8 +50,8 @@ inputs:
     description: Maximum number of archived log files to keep for each service
   max-log-files:
     description: Maximum number of log files to keep for each service
-  network-contacts-file-name:
-    description: Provide a name for the network contacts file
+  network-contacts-url:
+    description: Provide the network contacts URL
   network-id:
     description: >
       The ID of the original network being bootstrapped from.
@@ -105,7 +105,7 @@ runs:
         LOG_FORMAT: ${{ inputs.log-format }}
         MAX_ARCHIVED_LOG_FILES: ${{ inputs.max-archived-log-files }}
         MAX_LOG_FILES: ${{ inputs.max-log-files }}
-        NETWORK_CONTACTS_FILE_NAME: ${{ inputs.network-contacts-file-name }}
+        NETWORK_CONTACTS_URL: ${{ inputs.network-contacts-url }}
         NETWORK_ID: ${{ inputs.network-id }}
         NETWORK_NAME: ${{ inputs.network-name }}
         NODE_COUNT: ${{ inputs.node-count }}
@@ -124,7 +124,7 @@ runs:
         command="testnet-deploy bootstrap \
           --name $NETWORK_NAME \
           --environment-type $ENVIRONMENT_TYPE \
-          --bootstrap-peer $PEER \
+          --peer $PEER \
           --provider $PROVIDER "
         [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
         [[ $ANSIBLE_VERBOSE == "true" ]] && command="$command --ansible-verbose "
@@ -145,7 +145,7 @@ runs:
         [[ -n $LOG_FORMAT ]] && command="$command --log-format $LOG_FORMAT "
         [[ -n $MAX_ARCHIVED_LOG_FILES ]] && command="$command --max-archived-log-files $MAX_ARCHIVED_LOG_FILES "
         [[ -n $MAX_LOG_FILES ]] && command="$command --max-log-files $MAX_LOG_FILES "
-        [[ -n $NETWORK_CONTACTS_FILE_NAME ]] && command="$command --network-contacts-file-name $NETWORK_CONTACTS_FILE_NAME "
+        [[ -n $NETWORK_CONTACTS_URL ]] && command="$command --network-contacts-url $NETWORK_CONTACTS_URL "
         [[ -n $NETWORK_ID ]] && command="$command --network-id $NETWORK_ID "
         [[ -n $NODE_COUNT ]] && command="$command --node-count $NODE_COUNT "
         [[ -n $NODE_VM_COUNT ]] && command="$command --node-vm-count $NODE_VM_COUNT "
