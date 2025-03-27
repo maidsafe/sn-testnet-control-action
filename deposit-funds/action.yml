@@ -1,5 +1,5 @@
 name: Deposit Funds
-description: Deposit tokens and gas from the provided funding wallet secret key to all the uploaders
+description: Deposit tokens and gas from the provided funding wallet secret key to all the ANT instances.
 inputs:
   network-name:
     description: The name of the network
@@ -8,7 +8,7 @@ inputs:
     description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
     required: true
   funding-wallet-secret-key:
-    description: The secret key for the wallet that will fund all the uploaders. This argument only applies when Arbitrum or Sepolia networks are used.
+    description: The secret key for the wallet that will fund all the ANT instances. This argument only applies when Arbitrum or Sepolia networks are used.
   gas-to-transfer:
     description: The number of gas to transfer, in U256. 1 ETH = 1_000_000_000_000_000_000. Defaults to 0.1 ETH
   tokens-to-transfer:
