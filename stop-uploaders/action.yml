@@ -16,4 +16,4 @@ runs:
         set -e
 
         cd sn-testnet-deploy
-        testnet-deploy uploaders stop --name $NETWORK_NAME
+        testnet-deploy clients stop-uploaders --name $NETWORK_NAME

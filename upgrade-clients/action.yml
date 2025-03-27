@@ -1,5 +1,5 @@
-name: Upgrade Uploaders
-description: Use testnet-deploy to upgrade the uploaders to use the latest safe client
+name: Upgrade Clients
+description: Use testnet-deploy to upgrade the Client VMs to use the latest ANT binary
 inputs:
   network-name:
     description: The name of the network
@@ -11,7 +11,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: upgrade uploaders
+    - name: upgrade clients
       env:
         NETWORK_NAME: ${{ inputs.network-name }}
       shell: bash
@@ -19,7 +19,7 @@ runs:
         set -e
 
         cd sn-testnet-deploy
-        command="testnet-deploy uploaders upgrade --name $NETWORK_NAME "
+        command="testnet-deploy clients upgrade --name $NETWORK_NAME "
         [[ -n $VERSION ]] && command="$command --version $VERSION "
 
         echo "Will run testnet-deploy with: $command"

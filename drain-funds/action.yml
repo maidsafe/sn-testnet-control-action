@@ -1,5 +1,5 @@
 name: Drain Funds
-description: Drain all the tokens and gas from the uploaders to the funding wallet.
+description: Drain all the tokens and gas from the ANT instances to the funding wallet.
 inputs:
   network-name:
     description: The name of the network

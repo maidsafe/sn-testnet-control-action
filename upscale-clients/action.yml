@@ -1,22 +1,21 @@
-name: Upscale Uploaders
-description: Upscale the uploaders on the network
+name: Upscale Clients
+description: Upscale the Clients on the network
 inputs:
   autonomi-version:
     description: >
-      Provide the version of autonomi to use with any new uploaders.
-      This value must be supplied when `uploader-vm-count` is used.
+      Provide the version of autonomi to use with the new Client VMs.
+      This value must be supplied when `client-vm-count` is used.
     required: false
+  desired-client-vm-count:
+    description: Number of Client VMs to be deployed
   desired-uploaders-count:
     description: Number of uploaders to run per VM
-  desired-uploader-vm-count:
-    description: Number of uploader VMs to be deployed
-  downloaders-count:
-    description: Number of downloader services to run
-    default: '0'
+  enable-downloaders:
+    description: Enable all the various downloaders on the Client VMS if set to true.
   funding-wallet-secret-key:
     description: The secret key of the funding wallet
   gas-amount:
-    description: The amount of gas to be used by each uploader
+    description: The amount of gas to be used by each ant instance.
   infra-only:
     description: Only run the terraform part to upscale the machines
     default: false
@@ -36,12 +35,12 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: upscale uploaders
+    - name: upscale clients
       env:
         AUTONOMI_VERSION: ${{ inputs.autonomi-version }}
+        DESIRED_CLIENT_VM_COUNT: ${{ inputs.desired-client-vm-count }}
         DESIRED_UPLOADERS_COUNT: ${{ inputs.desired-uploaders-count }}
-        DESIRED_UPLOADER_VM_COUNT: ${{ inputs.desired-uploader-vm-count }}
-        DOWNLOADERS_COUNT: ${{ inputs.downloaders-count }}
+        ENABLE_DOWNLOADERS: ${{ inputs.enable-downloaders }}
         FUNDING_WALLET_SECRET_KEY: ${{ inputs.funding-wallet-secret-key }}
         GAS_AMOUNT: ${{ inputs.gas-amount }}
         INFRA_ONLY: ${{ inputs.infra-only }}
@@ -58,9 +57,9 @@ runs:
           --name $NETWORK_NAME \
           --provider $PROVIDER "
         [[ -n $AUTONOMI_VERSION ]] && command="$command --autonomi-version $AUTONOMI_VERSION "
+        [[ -n $DESIRED_CLIENT_VM_COUNT ]] && command="$command --desired-client-vm-count $DESIRED_CLIENT_VM_COUNT "
         [[ -n $DESIRED_UPLOADERS_COUNT ]] && command="$command --desired-uploaders-count $DESIRED_UPLOADERS_COUNT "
-        [[ -n $DESIRED_UPLOADER_VM_COUNT ]] && command="$command --desired-uploader-vm-count $DESIRED_UPLOADER_VM_COUNT "
-        [[ -n $DOWNLOADERS_COUNT ]] && command="$command --downloaders-count $DOWNLOADERS_COUNT "
+        [[ $ENABLE_DOWNLOADERS == "true" ]] && command="$command --enable-downloaders "
         [[ -n $FUNDING_WALLET_SECRET_KEY ]] && command="$command --funding-wallet-secret-key $FUNDING_WALLET_SECRET_KEY "
         [[ -n $GAS_AMOUNT ]] && command="$command --gas-amount $GAS_AMOUNT "
         [[ $INFRA_ONLY == "true" ]] && command="$command --infra-only "

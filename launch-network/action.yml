@@ -27,12 +27,15 @@ inputs:
       Only applies when building a custom branch.
   client-env:
     description: Pass a comma-separated list of environment variables to the ant binary
+  client-vm-count:
+    description: Number of client VMs to be deployed
+  client-vm-size:
+    description: The size of the Client VMs
   disable-telegraf:
     description: Disable Telegraf metrics collection if set to true
     default: false
-  downloaders-count:
-    description: Number of downloader services to run
-    default: '0'
+  enable-downloaders:
+    description: Enable all the various downloaders on the Client VMS if set to true.
   environment-type:
     description: >
       Possible values are 'development', 'staging' and 'production'. This value determines the sizes
@@ -59,9 +62,9 @@ inputs:
   full-cone-private-node-volume-size:
     description: The size of the volumes for full cone private node VMs in GB
   initial-gas:
-    description: Override the default initial gas amount for uploaders
+    description: Override the default initial gas amount for the ANT instances.
   initial-tokens:
-    description: Override the default initial token amount for uploaders
+    description: Override the default initial token amount for the ANT instances.
   interval:
     description: The interval to apply between each node startup. Units are ms. The default is 200.
   log-format:
@@ -120,10 +123,6 @@ inputs:
     description: Number of symmetric private node VMs to be deployed
   symmetric-private-node-volume-size:
     description: The size of the volumes for symmetric private node VMs in GB
-  uploader-vm-count:
-    description: Number of uploader VMs to be deployed
-  uploader-vm-size:
-    description: The size of the uploader VMs
   uploaders-count:
     description: Number of uploaders to run per VM
   to-genesis:
@@ -131,7 +130,7 @@ inputs:
     default: false
   wallet-secret-key:
       description: >
-        A wallet secret key for the uploaders.
+        A wallet secret key for the ANT clients.
         It only applies when Arbitrum One or Sepolia networks are used.
 
 runs:
@@ -149,8 +148,10 @@ runs:
         AUTONOMI_REPO_OWNER: ${{ inputs.autonomi-repo-owner }}
         CHUNK_SIZE: ${{ inputs.chunk-size }}
         CLIENT_ENV: ${{ inputs.client-env }}
+        CLIENT_VM_COUNT: ${{ inputs.client-vm-count }}
+        CLIENT_VM_SIZE: ${{ inputs.client-vm-size }}
         DISABLE_TELEGRAF: ${{ inputs.disable-telegraf }}
-        DOWNLOADERS_COUNT: ${{ inputs.downloaders-count }}
+        ENABLE_DOWNLOADERS: ${{ inputs.enable-downloaders }}
         ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
         EVM_DATA_PAYMENTS_ADDRESS: ${{ inputs.evm-data-payments-address }}
         EVM_NETWORK_TYPE: ${{ inputs.evm-network-type }}
@@ -189,8 +190,6 @@ runs:
         SYMMETRIC_PRIVATE_NODE_COUNT: ${{ inputs.symmetric-private-node-count }}
         SYMMETRIC_PRIVATE_NODE_VM_COUNT: ${{ inputs.symmetric-private-node-vm-count }}
         SYMMETRIC_PRIVATE_NODE_VOLUME_SIZE: ${{ inputs.symmetric-private-node-volume-size }}
-        UPLOADER_VM_COUNT: ${{ inputs.uploader-vm-count }}
-        UPLOADER_VM_SIZE: ${{ inputs.uploader-vm-size }}
         UPLOADERS_COUNT: ${{ inputs.uploaders-count }}
         TO_GENESIS: ${{ inputs.to-genesis }}
         WALLET_SECRET_KEY: ${{ inputs.wallet-secret-key }}
@@ -212,8 +211,10 @@ runs:
         [[ -n $AUTONOMI_REPO_OWNER ]] && command="$command --repo-owner $AUTONOMI_REPO_OWNER "
         [[ -n $CHUNK_SIZE ]] && command="$command --chunk-size $CHUNK_SIZE "
         [[ -n $CLIENT_ENV ]] && command="$command --client-env $CLIENT_ENV "
+        [[ -n $CLIENT_VM_COUNT ]] && command="$command --client-vm-count $CLIENT_VM_COUNT "
+        [[ -n $CLIENT_VM_SIZE ]] && command="$command --client-vm-size $CLIENT_VM_SIZE "
         [[ $DISABLE_TELEGRAF == "true" ]] && command="$command --disable-telegraf "
-        [[ $DOWNLOADERS_COUNT -gt 0 ]] && command="$command --downloaders-count $DOWNLOADERS_COUNT "
+        [[ $ENABLE_DOWNLOADERS == "true" ]] && command="$command --enable-downloaders "
         [[ -n $EVM_DATA_PAYMENTS_ADDRESS ]] && command="$command --evm-data-payments-address $EVM_DATA_PAYMENTS_ADDRESS "
         [[ -n $EVM_NETWORK_TYPE ]] && command="$command --evm-network-type $EVM_NETWORK_TYPE "
         [[ -n $EVM_NODE_VM_SIZE ]] && command="$command --evm-node-vm-size $EVM_NODE_VM_SIZE "
@@ -248,8 +249,6 @@ runs:
         [[ -n $SYMMETRIC_PRIVATE_NODE_COUNT ]] && command="$command --symmetric-private-node-count $SYMMETRIC_PRIVATE_NODE_COUNT "
         [[ -n $SYMMETRIC_PRIVATE_NODE_VM_COUNT ]] && command="$command --symmetric-private-node-vm-count $SYMMETRIC_PRIVATE_NODE_VM_COUNT "
         [[ -n $SYMMETRIC_PRIVATE_NODE_VOLUME_SIZE ]] && command="$command --symmetric-private-node-volume-size $SYMMETRIC_PRIVATE_NODE_VOLUME_SIZE "
-        [[ -n $UPLOADER_VM_COUNT ]] && command="$command --uploader-vm-count $UPLOADER_VM_COUNT "
-        [[ -n $UPLOADER_VM_SIZE ]] && command="$command --uploader-vm-size $UPLOADER_VM_SIZE "
         [[ -n $UPLOADERS_COUNT ]] && command="$command --uploaders-count $UPLOADERS_COUNT "
         [[ -n $TO_GENESIS ]] && command="$command --to-genesis "
         [[ -n $WALLET_SECRET_KEY ]] && command="$command --funding-wallet-secret-key $WALLET_SECRET_KEY "

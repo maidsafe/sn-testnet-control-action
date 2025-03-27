@@ -1,5 +1,5 @@
-name: Start Uploaders
-description: Use testnet-deploy to start the uploaders for the environment
+name: Stop Downloaders
+description: Use testnet-deploy to stop the downloaders for the environment
 inputs:
   network-name:
     description: The name of the network
@@ -8,7 +8,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: start uploaders
+    - name: stop downloaders
       env:
         NETWORK_NAME: ${{ inputs.network-name }}
       shell: bash
@@ -16,4 +16,4 @@ runs:
         set -e
 
         cd sn-testnet-deploy
-        testnet-deploy clients start-uploaders --name $NETWORK_NAME
+        testnet-deploy clients stop-downloaders --name $NETWORK_NAME

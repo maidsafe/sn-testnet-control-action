@@ -3,8 +3,8 @@ description: Upscale an existing network to a given configuration
 inputs:
   ant-version:
     description: >
-      Provide the version of autonomi to use with any new uploaders.
-      This value must be supplied when `uploader-vm-count` is used.
+      Provide the version of autonomi to use inside the Client VMs.
+      This value must be supplied when `desired-client-vm-count` is used.
     required: false
   antctl-version:
     description: Version of antctl to use for any new nodes
@@ -19,6 +19,8 @@ inputs:
     description: >
       Build binaries from the autonomi repository owned by this org or username. The testnet
       will use these binaries.
+  desired-client-vm-count:
+    description: Number of client VMs to be deployed
   desired-full-cone-private-node-count:
     description: Number of node services to run on each full-cone private node VM
   desired-full-cone-private-node-vm-count:
@@ -35,10 +37,10 @@ inputs:
     description: Number of node services to run on each symmetric private node VM
   desired-symmetric-private-node-vm-count:
     description: Number of symmetric private node VMs to be deployed
-  desired-uploader-vm-count:
-    description: Number of uploader VMs to be deployed
   desired-uploaders-count:
-    description: Number of uploaders to run per VM
+    description: Number of uploaders to run per Client VM
+  enable-downloaders:
+    description: Enable all the various downloaders on the new Client VMS if set to true.
   funding-wallet-secret-key:
     description: Secret key for the funding wallet
     required: false
@@ -78,6 +80,7 @@ runs:
         ANTNODE_VERSION: ${{ inputs.antnode-version }}
         AUTONOMI_BRANCH: ${{ inputs.autonomi-branch }}
         AUTONOMI_REPO_OWNER: ${{ inputs.autonomi-repo-owner }}
+        DESIRED_CLIENT_VM_COUNT: ${{ inputs.desired-client-vm-count }}
         DESIRED_FULL_CONE_PRIVATE_NODE_COUNT: ${{ inputs.desired-full-cone-private-node-count }}
         DESIRED_FULL_CONE_PRIVATE_NODE_VM_COUNT: ${{ inputs.desired-full-cone-private-node-vm-count }}
         DESIRED_NODE_COUNT: ${{ inputs.desired-node-count }}
@@ -87,7 +90,7 @@ runs:
         DESIRED_SYMMETRIC_PRIVATE_NODE_COUNT: ${{ inputs.desired-symmetric-private-node-count }}
         DESIRED_SYMMETRIC_PRIVATE_NODE_VM_COUNT: ${{ inputs.desired-symmetric-private-node-vm-count }}
         DESIRED_UPLOADERS_COUNT: ${{ inputs.desired-uploaders-count }}
-        DESIRED_UPLOADER_VM_COUNT: ${{ inputs.desired-uploader-vm-count }}
+        ENABLE_DOWNLOADERS: ${{ inputs.enable-downloaders }}
         FUNDING_WALLET_SECRET_KEY: ${{ inputs.funding-wallet-secret-key }}
         INFRA_ONLY: ${{ inputs.infra-only }}
         INTERVAL: ${{ inputs.interval }}
@@ -111,6 +114,7 @@ runs:
         [[ -n $ANTNODE_VERSION ]] && command="$command --antnode-version $ANTNODE_VERSION "
         [[ -n $AUTONOMI_BRANCH ]] && command="$command --branch $AUTONOMI_BRANCH "
         [[ -n $AUTONOMI_REPO_OWNER ]] && command="$command --repo-owner $AUTONOMI_REPO_OWNER "
+        [[ -n $DESIRED_CLIENT_VM_COUNT && $DESIRED_CLIENT_VM_COUNT != "0" ]] && command="$command --desired-client-vm-count $DESIRED_CLIENT_VM_COUNT "
         [[ -n $DESIRED_FULL_CONE_PRIVATE_NODE_COUNT && $DESIRED_FULL_CONE_PRIVATE_NODE_COUNT != "0" ]] && command="$command --desired-full-cone-private-node-count $DESIRED_FULL_CONE_PRIVATE_NODE_COUNT "
         [[ -n $DESIRED_FULL_CONE_PRIVATE_NODE_VM_COUNT && $DESIRED_FULL_CONE_PRIVATE_NODE_VM_COUNT != "0" ]] && command="$command --desired-full-cone-private-node-vm-count $DESIRED_FULL_CONE_PRIVATE_NODE_VM_COUNT "
         [[ -n $DESIRED_NODE_COUNT && $DESIRED_NODE_COUNT != "0" ]] && command="$command --desired-node-count $DESIRED_NODE_COUNT "
@@ -120,7 +124,7 @@ runs:
         [[ -n $DESIRED_SYMMETRIC_PRIVATE_NODE_COUNT && $DESIRED_SYMMETRIC_PRIVATE_NODE_COUNT != "0" ]] && command="$command --desired-symmetric-private-node-count $DESIRED_SYMMETRIC_PRIVATE_NODE_COUNT "
         [[ -n $DESIRED_SYMMETRIC_PRIVATE_NODE_VM_COUNT && $DESIRED_SYMMETRIC_PRIVATE_NODE_VM_COUNT != "0" ]] && command="$command --desired-symmetric-private-node-vm-count $DESIRED_SYMMETRIC_PRIVATE_NODE_VM_COUNT "
         [[ -n $DESIRED_UPLOADERS_COUNT && $DESIRED_UPLOADERS_COUNT != "0" ]] && command="$command --desired-uploaders-count $DESIRED_UPLOADERS_COUNT "
-        [[ -n $DESIRED_UPLOADER_VM_COUNT && $DESIRED_UPLOADER_VM_COUNT != "0" ]] && command="$command --desired-uploader-vm-count $DESIRED_UPLOADER_VM_COUNT "
+        [[ $ENABLE_DOWNLOADERS == "true" ]] && command="$command --enable-downloaders "
         [[ -n $FUNDING_WALLET_SECRET_KEY ]] && command="$command --funding-wallet-secret-key $FUNDING_WALLET_SECRET_KEY "
         [[ $INFRA_ONLY == "true" ]] && command="$command --infra-only "
         [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
