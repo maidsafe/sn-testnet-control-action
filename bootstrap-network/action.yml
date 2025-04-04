@@ -76,6 +76,8 @@ inputs:
   provider:
     description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
     required: true
+  region:
+    description: The cloud region to deploy resources in.  Defaults to "lon1" for Digital Ocean.
   rewards-address:
     description: The address for receiving network rewards
   symmetric-private-node-count:
@@ -116,6 +118,7 @@ runs:
         NODE_VM_SIZE: ${{ inputs.node-vm-size }}
         PEER: ${{ inputs.peer }}
         PROVIDER: ${{ inputs.provider }}
+        REGION: ${{ inputs.region }}
         REWARDS_ADDRESS: ${{ inputs.rewards-address }}
         SYMMETRIC_PRIVATE_NODE_COUNT: ${{ inputs.symmetric-private-node-count }}
         SYMMETRIC_PRIVATE_NODE_VM_COUNT: ${{ inputs.symmetric-private-node-vm-count }}
@@ -153,6 +156,7 @@ runs:
         [[ -n $NODE_VM_COUNT ]] && command="$command --node-vm-count $NODE_VM_COUNT "
         [[ -n $NODE_VM_SIZE ]] && command="$command --node-vm-size $NODE_VM_SIZE "
         [[ -n $PEER ]] && command="$command --peer $PEER "
+        [[ -n $REGION ]] && command="$command --region $REGION "
         [[ -n $REWARDS_ADDRESS ]] && command="$command --rewards-address $REWARDS_ADDRESS "
         [[ -n $SYMMETRIC_PRIVATE_NODE_COUNT ]] && command="$command --symmetric-private-node-count $SYMMETRIC_PRIVATE_NODE_COUNT "
         [[ -n $SYMMETRIC_PRIVATE_NODE_VM_COUNT ]] && command="$command --symmetric-private-node-vm-count $SYMMETRIC_PRIVATE_NODE_VM_COUNT "
