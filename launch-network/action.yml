@@ -112,6 +112,8 @@ inputs:
     description: Set to make node manager RPC daemons publicly accessible
     required: true
     default: false
+  region:
+    description: The cloud region to deploy resources in.  Defaults to "lon1" for Digital Ocean.
   rewards-address:
     description: The rewards address for each safenode service.
     required: true
@@ -184,6 +186,7 @@ runs:
         PROTOCOL_VERSION: ${{ inputs.protocol-version }}
         PROVIDER: ${{ inputs.provider }}
         PUBLIC_RPC: ${{ inputs.public-rpc }}
+        REGION: ${{ inputs.region }}
         RUST_LOG: ${{ inputs.rust-log }}
         REWARDS_ADDRESS: ${{ inputs.rewards-address }}
         SYMMETRIC_PRIVATE_NAT_GATEWAY_VM_SIZE: ${{ inputs.symmetric-private-nat-gateway-vm-size }}
@@ -244,6 +247,7 @@ runs:
         [[ -n $PEER_CACHE_NODE_VOLUME_SIZE ]] && command="$command --peer-cache-node-volume-size $PEER_CACHE_NODE_VOLUME_SIZE "
         [[ -n $PROTOCOL_VERSION ]] && command="$command --protocol-version $PROTOCOL_VERSION "
         [[ $PUBLIC_RPC == "true" ]] && command="$command --public-rpc "
+        [[ -n $REGION ]] && command="$command --region $REGION "
         [[ -n $REWARDS_ADDRESS ]] && command="$command --rewards-address $REWARDS_ADDRESS "
         [[ -n $SYMMETRIC_PRIVATE_NAT_GATEWAY_VM_SIZE ]] && command="$command --symmetric-private-nat-gateway-vm-size $SYMMETRIC_PRIVATE_NAT_GATEWAY_VM_SIZE "
         [[ -n $SYMMETRIC_PRIVATE_NODE_COUNT ]] && command="$command --symmetric-private-node-count $SYMMETRIC_PRIVATE_NODE_COUNT "
