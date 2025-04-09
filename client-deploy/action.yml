@@ -1,0 +1,184 @@
+name: Client Deploy
+description: Deploys a new client environment with a given specification
+inputs:
+  ansible-forks:
+    description: Override the maximum number of forks Ansible will use to execute tasks on target hosts
+  ansible-verbose:
+    description: Set to use verbose output for Ansible
+    default: false
+  ant-version:
+    description: Supply a version for ant. Otherwise the latest will be used.
+  branch:
+    description: >
+      Build binaries from the specified autonomi branch. The testnet will use these binaries.
+  chunk-size:
+    description: >
+      Specify the chunk size in bytes as a 64-bit integer.
+      Only applies when building a custom branch.
+  client-env:
+    description: Pass a comma-separated list of environment variables to the ant binary
+  client-vm-count:
+    description: Number of client VMs to be deployed
+  client-vm-size:
+    description: The size of the Client VMs
+  disable-download-verifier:
+    description: Set to disable the download-verifier downloader on the VMs
+    default: false
+  disable-performance-verifier:
+    description: Set to disable the performance-verifier downloader on the VMs
+    default: false
+  disable-random-verifier:
+    description: Set to disable the random-verifier downloader on the VMs
+    default: false
+  disable-telegraf:
+    description: Disable Telegraf metrics collection if set to true
+    default: false
+  disable-uploaders:
+    description: Set to disable uploaders on the VMs
+    default: false
+  environment-type:
+    description: >
+      Possible values are 'development', 'staging' and 'production'. This value determines the sizes
+      and counts of VMs. The counts can be overridden with the other count inputs.
+    required: true
+    default: development
+  evm-data-payments-address:
+    description: The address of the EVM data payments contract
+  evm-network-type:
+    description: >
+      The type of EVM network to use. Possible values are 'arbitrum-one' or 'custom'.
+    default: 'arbitrum-one'
+  evm-payment-token-address:
+    description: The address of the EVM payment token contract
+  evm-rpc-url:
+    description: The RPC URL for the EVM network when using a custom network type
+  expected-hash:
+    description: The expected hash of the file to download for verification
+  expected-size:
+    description: The expected size of the file to download for verification
+  file-address:
+    description: The address of the file to download for verification
+  initial-gas:
+    description: Override the default initial gas amount for the ANT instances
+  initial-tokens:
+    description: Override the default initial token amount for the ANT instances
+  max-uploads:
+    description: Maximum number of uploads to perform before stopping
+  name:
+    description: The name of the environment
+    required: true
+  network-id:
+    description: >
+      Specify the network ID to use for the node services. This is used to partition the network
+      and will not allow nodes with different network IDs to join.
+    default: 1
+  network-contacts-url:
+    description: The networks contacts URL from an existing network
+  peer:
+    description: A peer from an existing network that the Ant client can connect to (in multiaddr format)
+  provider:
+    description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
+    required: true
+    default: digital-ocean
+  region:
+    description: The cloud region to deploy resources in. Defaults to "lon1" for Digital Ocean.
+    default: lon1
+  repo-owner:
+    description: >
+      Build binaries from the autonomi repository owned by this org or username. The testnet
+      will use these binaries.
+  uploaders-count:
+    description: The desired number of uploaders per client VM
+    default: 1
+  wallet-secret-key:
+    description: >
+      Pre-funded wallet secret keys to use for the ANT instances.
+      Should be a comma-separated list of keys, one for each ANT instance.
+      The number of keys must match the total number of uploaders (VM count * uploaders per VM).
+      When using this option, the deployer will not fund the wallets.
+
+runs:
+  using: composite
+  steps:
+    - name: Deploy clients
+      env:
+        ANSIBLE_FORKS: ${{ inputs.ansible-forks }}
+        ANSIBLE_VERBOSE: ${{ inputs.ansible-verbose }}
+        ANT_VERSION: ${{ inputs.ant-version }}
+        BRANCH: ${{ inputs.branch }}
+        CHUNK_SIZE: ${{ inputs.chunk-size }}
+        CLIENT_ENV: ${{ inputs.client-env }}
+        CLIENT_VM_COUNT: ${{ inputs.client-vm-count }}
+        CLIENT_VM_SIZE: ${{ inputs.client-vm-size }}
+        DISABLE_DOWNLOAD_VERIFIER: ${{ inputs.disable-download-verifier }}
+        DISABLE_PERFORMANCE_VERIFIER: ${{ inputs.disable-performance-verifier }}
+        DISABLE_RANDOM_VERIFIER: ${{ inputs.disable-random-verifier }}
+        DISABLE_TELEGRAF: ${{ inputs.disable-telegraf }}
+        DISABLE_UPLOADERS: ${{ inputs.disable-uploaders }}
+        ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
+        EVM_DATA_PAYMENTS_ADDRESS: ${{ inputs.evm-data-payments-address }}
+        EVM_NETWORK_TYPE: ${{ inputs.evm-network-type }}
+        EVM_PAYMENT_TOKEN_ADDRESS: ${{ inputs.evm-payment-token-address }}
+        EVM_RPC_URL: ${{ inputs.evm-rpc-url }}
+        EXPECTED_HASH: ${{ inputs.expected-hash }}
+        EXPECTED_SIZE: ${{ inputs.expected-size }}
+        FILE_ADDRESS: ${{ inputs.file-address }}
+        INITIAL_GAS: ${{ inputs.initial-gas }}
+        INITIAL_TOKENS: ${{ inputs.initial-tokens }}
+        MAX_UPLOADS: ${{ inputs.max-uploads }}
+        NAME: ${{ inputs.name }}
+        NETWORK_ID: ${{ inputs.network-id }}
+        NETWORK_CONTACTS_URL: ${{ inputs.network-contacts-url }}
+        PEER: ${{ inputs.peer }}
+        PROVIDER: ${{ inputs.provider }}
+        REGION: ${{ inputs.region }}
+        REPO_OWNER: ${{ inputs.repo-owner }}
+        UPLOADERS_COUNT: ${{ inputs.uploaders-count }}
+        WALLET_SECRET_KEY: ${{ inputs.wallet-secret-key }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        command="testnet-deploy clients deploy \
+          --name $NAME \
+          --environment-type $ENVIRONMENT_TYPE \
+          --provider $PROVIDER "
+        [[ $ANSIBLE_VERBOSE == "true" ]] && command="$command --ansible-verbose "
+        [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
+        [[ -n $ANT_VERSION ]] && command="$command --ant-version $ANT_VERSION "
+        [[ -n $BRANCH ]] && command="$command --branch $BRANCH "
+        [[ -n $CHUNK_SIZE ]] && command="$command --chunk-size $CHUNK_SIZE "
+        [[ -n $CLIENT_ENV ]] && command="$command --client-env $CLIENT_ENV "
+        [[ -n $CLIENT_VM_COUNT ]] && command="$command --client-vm-count $CLIENT_VM_COUNT "
+        [[ -n $CLIENT_VM_SIZE ]] && command="$command --client-vm-size $CLIENT_VM_SIZE "
+        [[ $DISABLE_DOWNLOAD_VERIFIER == "true" ]] && command="$command --disable-download-verifier "
+        [[ $DISABLE_PERFORMANCE_VERIFIER == "true" ]] && command="$command --disable-performance-verifier "
+        [[ $DISABLE_RANDOM_VERIFIER == "true" ]] && command="$command --disable-random-verifier "
+        [[ $DISABLE_TELEGRAF == "true" ]] && command="$command --disable-telegraf "
+        [[ $DISABLE_UPLOADERS == "true" ]] && command="$command --disable-uploaders "
+        [[ -n $EVM_DATA_PAYMENTS_ADDRESS ]] && command="$command --evm-data-payments-address $EVM_DATA_PAYMENTS_ADDRESS "
+        [[ -n $EVM_NETWORK_TYPE ]] && command="$command --evm-network-type $EVM_NETWORK_TYPE "
+        [[ -n $EVM_PAYMENT_TOKEN_ADDRESS ]] && command="$command --evm-payment-token-address $EVM_PAYMENT_TOKEN_ADDRESS "
+        [[ -n $EVM_RPC_URL ]] && command="$command --evm-rpc-url \"$EVM_RPC_URL\" "
+        [[ -n $EXPECTED_HASH ]] && command="$command --expected-hash $EXPECTED_HASH "
+        [[ -n $EXPECTED_SIZE ]] && command="$command --expected-size $EXPECTED_SIZE "
+        [[ -n $FILE_ADDRESS ]] && command="$command --file-address $FILE_ADDRESS "
+        [[ -n $INITIAL_GAS ]] && command="$command --initial-gas $INITIAL_GAS "
+        [[ -n $INITIAL_TOKENS ]] && command="$command --initial-tokens $INITIAL_TOKENS "
+        [[ -n $MAX_UPLOADS ]] && command="$command --max-uploads $MAX_UPLOADS "
+        [[ -n $NETWORK_ID ]] && command="$command --network-id $NETWORK_ID "
+        [[ -n $NETWORK_CONTACTS_URL ]] && command="$command --network-contacts-url $NETWORK_CONTACTS_URL "
+        [[ -n $PEER ]] && command="$command --peer $PEER "
+        [[ -n $REGION ]] && command="$command --region $REGION "
+        [[ -n $REPO_OWNER ]] && command="$command --repo-owner $REPO_OWNER "
+        [[ -n $UPLOADERS_COUNT ]] && command="$command --uploaders-count $UPLOADERS_COUNT "
+        if [[ -n $WALLET_SECRET_KEY ]]; then
+          IFS=',' read -ra KEYS <<< "$WALLET_SECRET_KEY"
+          for key in "${KEYS[@]}"; do
+            command="$command --wallet-secret-key $key"
+          done
+        fi
+
+        echo "Will run testnet-deploy with: $command"
+        eval $command
