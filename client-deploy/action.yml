@@ -58,6 +58,8 @@ inputs:
     description: The expected size of the file to download for verification
   file-address:
     description: The address of the file to download for verification
+  funding-wallet-secret-key:
+    description: The secret key of the wallet that will provide funds to the uploaders
   initial-gas:
     description: Override the default initial gas amount for the ANT instances
   initial-tokens:
@@ -123,6 +125,7 @@ runs:
         EXPECTED_HASH: ${{ inputs.expected-hash }}
         EXPECTED_SIZE: ${{ inputs.expected-size }}
         FILE_ADDRESS: ${{ inputs.file-address }}
+        FUNDING_WALLET_SECRET_KEY: ${{ inputs.funding-wallet-secret-key }}
         INITIAL_GAS: ${{ inputs.initial-gas }}
         INITIAL_TOKENS: ${{ inputs.initial-tokens }}
         MAX_UPLOADS: ${{ inputs.max-uploads }}
@@ -164,6 +167,7 @@ runs:
         [[ -n $EXPECTED_HASH ]] && command="$command --expected-hash $EXPECTED_HASH "
         [[ -n $EXPECTED_SIZE ]] && command="$command --expected-size $EXPECTED_SIZE "
         [[ -n $FILE_ADDRESS ]] && command="$command --file-address $FILE_ADDRESS "
+        [[ -n $FUNDING_WALLET_SECRET_KEY ]] && command="$command --funding-wallet-secret-key $FUNDING_WALLET_SECRET_KEY "
         [[ -n $INITIAL_GAS ]] && command="$command --initial-gas $INITIAL_GAS "
         [[ -n $INITIAL_TOKENS ]] && command="$command --initial-tokens $INITIAL_TOKENS "
         [[ -n $MAX_UPLOADS ]] && command="$command --max-uploads $MAX_UPLOADS "
