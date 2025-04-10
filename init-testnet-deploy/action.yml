@@ -78,6 +78,7 @@ runs:
         echo "AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
         echo "AWS_DEFAULT_REGION=${{ env.AWS_DEFAULT_REGION }}" >> $GITHUB_ENV
         echo "AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+        echo "CLIENT_TERRAFORM_STATE_BUCKET_NAME=${{ env.TERRAFORM_STATE_BUCKET_NAME }}" >> $GITHUB_ENV
         echo "DO_PAT=${{ env.DO_PAT }}" >> $GITHUB_ENV
         echo "SSH_KEY_PATH=/home/runner/.ssh/id_rsa" >> $GITHUB_ENV
         echo "TERRAFORM_STATE_BUCKET_NAME=${{ env.TERRAFORM_STATE_BUCKET_NAME }}" >> $GITHUB_ENV
