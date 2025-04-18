@@ -56,6 +56,8 @@ inputs:
   network-name:
     description: The name of the network
     required: true
+  node-env:
+    description: Pass a comma-separated list of environment variables to antnode services
   plan:
     description: Run a plan for the operation without performing it
     default: false
@@ -97,6 +99,7 @@ runs:
         MAX_ARCHIVED_LOG_FILES: ${{ inputs.max-archived-log-files }}
         MAX_LOG_FILES: ${{ inputs.max-log-files }}
         NETWORK_NAME: ${{ inputs.network-name }}
+        NODE_ENV: ${{ inputs.node-env }}
         PLAN: ${{ inputs.plan }}
         PROVIDER: ${{ inputs.provider }}
         PUBLIC_RPC: ${{ inputs.public-rpc }}
@@ -130,6 +133,7 @@ runs:
         [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
         [[ -n $MAX_ARCHIVED_LOG_FILES ]] && command="$command --max-archived-log-files $MAX_ARCHIVED_LOG_FILES "
         [[ -n $MAX_LOG_FILES ]] && command="$command --max-log-files $MAX_LOG_FILES "
+        [[ -n $NODE_ENV ]] && command="$command --node-env $NODE_ENV "
         [[ $PLAN == "true" ]] && command="$command --plan "
         [[ $PUBLIC_RPC == "true" ]] && command="$command --public-rpc "
 
