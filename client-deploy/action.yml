@@ -89,6 +89,8 @@ inputs:
     description: >
       Build binaries from the autonomi repository owned by this org or username. The testnet
       will use these binaries.
+  upload-size:
+    description: Size in megabytes of the randomly generated file that is continuously uploaded.
   uploaders-count:
     description: The desired number of uploaders per client VM
     default: 1
@@ -136,6 +138,7 @@ runs:
         PROVIDER: ${{ inputs.provider }}
         REGION: ${{ inputs.region }}
         REPO_OWNER: ${{ inputs.repo-owner }}
+        UPLOAD_SIZE: ${{ inputs.upload-size }}
         UPLOADERS_COUNT: ${{ inputs.uploaders-count }}
         WALLET_SECRET_KEY: ${{ inputs.wallet-secret-key }}
       shell: bash
@@ -176,6 +179,7 @@ runs:
         [[ -n $PEER ]] && command="$command --peer $PEER "
         [[ -n $REGION ]] && command="$command --region $REGION "
         [[ -n $REPO_OWNER ]] && command="$command --repo-owner $REPO_OWNER "
+        [[ -n $UPLOAD_SIZE ]] && command="$command --upload-size $UPLOAD_SIZE "
         [[ -n $UPLOADERS_COUNT ]] && command="$command --uploaders-count $UPLOADERS_COUNT "
         if [[ -n $WALLET_SECRET_KEY ]]; then
           IFS=',' read -ra KEYS <<< "$WALLET_SECRET_KEY"
