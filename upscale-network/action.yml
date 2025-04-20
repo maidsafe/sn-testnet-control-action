@@ -53,6 +53,8 @@ inputs:
     description: Maximum number of archived log files to keep for each service
   max-log-files:
     description: Maximum number of log files to keep for each service
+  network-dashboard-branch:
+    description: The branch of the network-dashboard repository to use
   network-name:
     description: The name of the network
     required: true
@@ -98,6 +100,7 @@ runs:
         INTERVAL: ${{ inputs.interval }}
         MAX_ARCHIVED_LOG_FILES: ${{ inputs.max-archived-log-files }}
         MAX_LOG_FILES: ${{ inputs.max-log-files }}
+        NETWORK_DASHBOARD_BRANCH: ${{ inputs.network-dashboard-branch }}
         NETWORK_NAME: ${{ inputs.network-name }}
         NODE_ENV: ${{ inputs.node-env }}
         PLAN: ${{ inputs.plan }}
@@ -133,6 +136,7 @@ runs:
         [[ -n $INTERVAL ]] && command="$command --interval $INTERVAL "
         [[ -n $MAX_ARCHIVED_LOG_FILES ]] && command="$command --max-archived-log-files $MAX_ARCHIVED_LOG_FILES "
         [[ -n $MAX_LOG_FILES ]] && command="$command --max-log-files $MAX_LOG_FILES "
+        [[ -n $NETWORK_DASHBOARD_BRANCH ]] && command="$command --network-dashboard-branch $NETWORK_DASHBOARD_BRANCH "
         [[ -n $NODE_ENV ]] && command="$command --node-env $NODE_ENV "
         [[ $PLAN == "true" ]] && command="$command --plan "
         [[ $PUBLIC_RPC == "true" ]] && command="$command --public-rpc "

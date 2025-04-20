@@ -84,6 +84,8 @@ inputs:
     description: The size of the NAT gateway VM
   network-contacts-file-name:
     description: Provide a name for the network contacts file
+  network-dashboard-branch:
+    description: The branch of the network-dashboard repository to use
   network-id:
     description: The network ID (must be between 2 and 255)
     type: number
@@ -181,6 +183,7 @@ runs:
         MAX_LOG_FILES: ${{ inputs.max-log-files }}
         NAT_GATEWAY_VM_SIZE: ${{ inputs.nat-gateway-vm-size }}
         NETWORK_CONTACTS_FILE_NAME: ${{ inputs.network-contacts-file-name }}
+        NETWORK_DASHBOARD_BRANCH: ${{ inputs.network-dashboard-branch }}
         NETWORK_ID: ${{ inputs.network-id }}
         NETWORK_NAME: ${{ inputs.network-name }}
         NODE_COUNT: ${{ inputs.node-count }}
@@ -246,6 +249,7 @@ runs:
         [[ -n $MAX_LOG_FILES ]] && command="$command --max-log-files $MAX_LOG_FILES "
         [[ -n $NAT_GATEWAY_VM_SIZE ]] && command="$command --nat-gateway-vm-size $NAT_GATEWAY_VM_SIZE "
         [[ -n $NETWORK_CONTACTS_FILE_NAME ]] && command="$command --network-contacts-file-name $NETWORK_CONTACTS_FILE_NAME "
+        [[ -n $NETWORK_DASHBOARD_BRANCH ]] && command="$command --network-dashboard-branch $NETWORK_DASHBOARD_BRANCH "
         [[ -n $NETWORK_ID ]] && command="$command --network-id $NETWORK_ID "
         [[ -n $NODE_COUNT ]] && command="$command --node-count $NODE_COUNT "
         [[ -n $NODE_ENV ]] && command="$command --node-env $NODE_ENV "
