@@ -31,11 +31,18 @@ inputs:
     description: Number of client VMs to be deployed
   client-vm-size:
     description: The size of the Client VMs
+  disable-download-verifier:
+    description: Disable the download-verifier downloader on the VMs
+    default: false
+  disable-performance-verifier:
+    description: Disable the performance-verifier downloader on the VMs
+    default: false
+  disable-random-verifier:
+    description: Disable the random-verifier downloader on the VMs
+    default: false
   disable-telegraf:
     description: Disable Telegraf metrics collection if set to true
     default: false
-  enable-downloaders:
-    description: Enable all the various downloaders on the Client VMS if set to true.
   environment-type:
     description: >
       Possible values are 'development', 'staging' and 'production'. This value determines the sizes
@@ -152,8 +159,10 @@ runs:
         CLIENT_ENV: ${{ inputs.client-env }}
         CLIENT_VM_COUNT: ${{ inputs.client-vm-count }}
         CLIENT_VM_SIZE: ${{ inputs.client-vm-size }}
+        DISABLE_DOWNLOAD_VERIFIER: ${{ inputs.disable-download-verifier }}
+        DISABLE_PERFORMANCE_VERIFIER: ${{ inputs.disable-performance-verifier }}
+        DISABLE_RANDOM_VERIFIER: ${{ inputs.disable-random-verifier }}
         DISABLE_TELEGRAF: ${{ inputs.disable-telegraf }}
-        ENABLE_DOWNLOADERS: ${{ inputs.enable-downloaders }}
         ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
         EVM_DATA_PAYMENTS_ADDRESS: ${{ inputs.evm-data-payments-address }}
         EVM_NETWORK_TYPE: ${{ inputs.evm-network-type }}
@@ -216,8 +225,10 @@ runs:
         [[ -n $CLIENT_ENV ]] && command="$command --client-env $CLIENT_ENV "
         [[ -n $CLIENT_VM_COUNT ]] && command="$command --client-vm-count $CLIENT_VM_COUNT "
         [[ -n $CLIENT_VM_SIZE ]] && command="$command --client-vm-size $CLIENT_VM_SIZE "
+        [[ $DISABLE_DOWNLOAD_VERIFIER == "true" ]] && command="$command --disable-download-verifier "
+        [[ $DISABLE_PERFORMANCE_VERIFIER == "true" ]] && command="$command --disable-performance-verifier "
+        [[ $DISABLE_RANDOM_VERIFIER == "true" ]] && command="$command --disable-random-verifier "
         [[ $DISABLE_TELEGRAF == "true" ]] && command="$command --disable-telegraf "
-        [[ $ENABLE_DOWNLOADERS == "true" ]] && command="$command --enable-downloaders "
         [[ -n $EVM_DATA_PAYMENTS_ADDRESS ]] && command="$command --evm-data-payments-address $EVM_DATA_PAYMENTS_ADDRESS "
         [[ -n $EVM_NETWORK_TYPE ]] && command="$command --evm-network-type $EVM_NETWORK_TYPE "
         [[ -n $EVM_NODE_VM_SIZE ]] && command="$command --evm-node-vm-size $EVM_NODE_VM_SIZE "
