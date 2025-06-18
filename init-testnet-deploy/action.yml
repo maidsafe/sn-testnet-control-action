@@ -107,26 +107,21 @@ runs:
       run: |
         set -e
 
+        git clone https://github.com/maidsafe/sn-testnet-deploy
+        cd sn-testnet-deploy
+
         if [[ -n "${{ inputs.version }}" ]]; then
           version="${{ inputs.version }}"
         else
-          version=$(curl --silent https://crates.io/api/v1/crates/sn-testnet-deploy | \
-            jq -r .crate.newest_version)
+          version=$(git describe --tags --abbrev=0 | sed 's/^v//')
         fi
         echo "Using version $version of testnet-deploy"
 
-        # We still need the source because that's where the Terraform and Ansible files are. Longer
-        # term we could copy these to a system-wide location and extend the testnet tool to look
-        # there.
-        git clone https://github.com/maidsafe/sn-testnet-deploy
-        (
-          cd sn-testnet-deploy
-          # In this case, it seems that crates.io is not returning the version for
-          # the crate. So we can just go with the latest code.
-          if [[ "$version" != "null" ]]; then
-            git checkout v${version}
-          fi
-        )
+        if [[ -n "${{ inputs.version }}" ]]; then
+          git checkout v${version}
+        fi
+
+        cd ..
 
         curl -L -O $BASE_URL/testnet-deploy-${version}-x86_64-unknown-linux-musl.zip
         unzip testnet-deploy-${version}-x86_64-unknown-linux-musl.zip
