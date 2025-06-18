@@ -113,6 +113,7 @@ runs:
           version=$(curl --silent https://crates.io/api/v1/crates/sn-testnet-deploy | \
             jq -r .crate.newest_version)
         fi
+        echo "Using version $version of testnet-deploy"
 
         # We still need the source because that's where the Terraform and Ansible files are. Longer
         # term we could copy these to a system-wide location and extend the testnet tool to look
