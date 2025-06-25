@@ -26,8 +26,6 @@ inputs:
       Possible values are 'development', 'staging' and 'production'. This value determines the sizes
       and counts of VMs. The counts can be overridden with the other count inputs.
     required: true
-  environment-vars:
-    description: Pass a comma-separated list of environment variables to safenode services
   evm-data-payments-address:
     description: The address of the EVM data payments contract
   evm-network-type:
@@ -65,6 +63,8 @@ inputs:
     required: true
   node-count:
     description: Number of node services to run on each node VM
+  node-env:
+    description: Pass a comma-separated list of environment variables to safenode services
   node-vm-count:
     description: Number of node VMs to be deployed
   node-vm-size:
@@ -99,7 +99,6 @@ runs:
         AUTONOMI_REPO_OWNER: ${{ inputs.autonomi-repo-owner }}
         CHUNK_SIZE: ${{ inputs.chunk-size }}
         ENVIRONMENT_TYPE: ${{ inputs.environment-type }}
-        ENVIRONMENT_VARS: ${{ inputs.environment-vars }}
         EVM_DATA_PAYMENTS_ADDRESS: ${{ inputs.evm-data-payments-address }}
         EVM_NETWORK_TYPE: ${{ inputs.evm-network-type }}
         EVM_PAYMENT_TOKEN_ADDRESS: ${{ inputs.evm-payment-token-address }}
@@ -114,6 +113,7 @@ runs:
         NETWORK_ID: ${{ inputs.network-id }}
         NETWORK_NAME: ${{ inputs.network-name }}
         NODE_COUNT: ${{ inputs.node-count }}
+        NODE_ENV: ${{ inputs.node-env }}
         NODE_VM_COUNT: ${{ inputs.node-vm-count }}
         NODE_VM_SIZE: ${{ inputs.node-vm-size }}
         PEER: ${{ inputs.peer }}
@@ -139,7 +139,6 @@ runs:
         [[ -n $ANTCTL_VERSION ]] && command="$command --antctl-version $ANTCTL_VERSION "
         [[ -n $ANTNODE_VERSION ]] && command="$command --antnode-version $ANTNODE_VERSION "
         [[ -n $CHUNK_SIZE ]] && command="$command --chunk-size $CHUNK_SIZE "
-        [[ -n $ENVIRONMENT_VARS ]] && command="$command --env $ENVIRONMENT_VARS "
         [[ -n $EVM_DATA_PAYMENTS_ADDRESS ]] && command="$command --evm-data-payments-address $EVM_DATA_PAYMENTS_ADDRESS "
         [[ -n $EVM_NETWORK_TYPE ]] && command="$command --evm-network-type $EVM_NETWORK_TYPE "
         [[ -n $EVM_PAYMENT_TOKEN_ADDRESS ]] && command="$command --evm-payment-token-address $EVM_PAYMENT_TOKEN_ADDRESS "
@@ -153,6 +152,7 @@ runs:
         [[ -n $NETWORK_CONTACTS_URL ]] && command="$command --network-contacts-url $NETWORK_CONTACTS_URL "
         [[ -n $NETWORK_ID ]] && command="$command --network-id $NETWORK_ID "
         [[ -n $NODE_COUNT ]] && command="$command --node-count $NODE_COUNT "
+        [[ -n $NODE_ENV ]] && command="$command --node-env $NODE_ENV "
         [[ -n $NODE_VM_COUNT ]] && command="$command --node-vm-count $NODE_VM_COUNT "
         [[ -n $NODE_VM_SIZE ]] && command="$command --node-vm-size $NODE_VM_SIZE "
         [[ -n $PEER ]] && command="$command --peer $PEER "
