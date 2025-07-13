@@ -1,0 +1,43 @@
+name: Upgrade Nginx Config
+description: Upgrade nginx configuration on the network VMs
+inputs:
+  ansible-forks:
+    description: Maximum number of forks Ansible will use to execute tasks on target hosts. Default is 50.
+  custom-inventory:
+    description: >
+      Provide a comma-separated list of VM names to use as a custom inventory.
+      This will upgrade nginx on a particular subset of VMs.
+  network-name:
+    description: The name of the environment
+    required: true
+  provider:
+    description: The cloud provider for the environment
+    default: digital-ocean
+
+runs:
+  using: composite
+  steps:
+    - name: upgrade nginx config
+      env:
+        ANSIBLE_FORKS: ${{ inputs.ansible-forks }}
+        CUSTOM_INVENTORY: ${{ inputs.custom-inventory }}
+        NETWORK_NAME: ${{ inputs.network-name }}
+        PROVIDER: ${{ inputs.provider }}
+      shell: bash
+      run: |
+        set -e
+
+        cd sn-testnet-deploy
+        command="testnet-deploy nginx upgrade-config --name $NETWORK_NAME "
+        [[ -n $ANSIBLE_FORKS ]] && command="$command --forks $ANSIBLE_FORKS "
+        [[ -n $PROVIDER ]] && command="$command --provider $PROVIDER "
+
+        if [[ -n $CUSTOM_INVENTORY ]]; then
+          IFS=',' read -ra VM_NAMES <<< "$CUSTOM_INVENTORY"
+          for vm_name in "${VM_NAMES[@]}"; do
+            command="$command --custom-inventory $vm_name"
+          done
+        fi
+
+        echo "Will run testnet-deploy with: $command"
+        eval $command
