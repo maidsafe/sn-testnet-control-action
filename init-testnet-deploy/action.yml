@@ -46,10 +46,7 @@ runs:
       shell: bash
       run: |
         sudo apt-get update -y
-        # There is some issue with the latest version of Ansible not correctly
-        # reading the Digital Ocean token from environment variables, so just
-        # pin to this version for now.
-        pip install --user ansible==8.2.0
+        pip install --user ansible
         pip install --user boto3
         sudo apt-get install jq -y
     - name: configure testnet-deploy
