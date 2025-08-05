@@ -60,7 +60,7 @@ inputs:
     description: The address of the EVM payment token contract
   evm-rpc-url:
     description: The RPC URL for the EVM network when using a custom network type
-  full-cone-private-nat-gateway-vm-size:
+  full-cone-vm-size:
     description: The size of the NAT gateway VM for full cone private nodes
   full-cone-private-node-count:
     description: Number of node services to run on each full cone private node VM
@@ -173,7 +173,7 @@ runs:
         EVM_NODE_VM_SIZE: ${{ inputs.evm-node-vm-size }}
         EVM_PAYMENT_TOKEN_ADDRESS: ${{ inputs.evm-payment-token-address }}
         EVM_RPC_URL: ${{ inputs.evm-rpc-url }}
-        FULL_CONE_PRIVATE_NAT_GATEWAY_VM_SIZE: ${{ inputs.full-cone-private-nat-gateway-vm-size }}
+        FULL_CONE_VM_SIZE: ${{ inputs.full-cone-vm-size }}
         FULL_CONE_PRIVATE_NODE_COUNT: ${{ inputs.full-cone-private-node-count }}
         FULL_CONE_PRIVATE_NODE_VM_COUNT: ${{ inputs.full-cone-private-node-vm-count }}
         FULL_CONE_PRIVATE_NODE_VOLUME_SIZE: ${{ inputs.full-cone-private-node-volume-size }}
@@ -240,7 +240,7 @@ runs:
         [[ -n $EVM_NODE_VM_SIZE ]] && command="$command --evm-node-vm-size $EVM_NODE_VM_SIZE "
         [[ -n $EVM_PAYMENT_TOKEN_ADDRESS ]] && command="$command --evm-payment-token-address $EVM_PAYMENT_TOKEN_ADDRESS "
         [[ -n $EVM_RPC_URL ]] && command="$command --evm-rpc-url \"$EVM_RPC_URL\" "
-        [[ -n $FULL_CONE_PRIVATE_NAT_GATEWAY_VM_SIZE ]] && command="$command --full-cone-private-nat-gateway-vm-size $FULL_CONE_PRIVATE_NAT_GATEWAY_VM_SIZE "
+        [[ -n $FULL_CONE_VM_SIZE ]] && command="$command --full-cone-vm-size $FULL_CONE_VM_SIZE "
         [[ -n $FULL_CONE_PRIVATE_NODE_COUNT ]] && command="$command --full-cone-private-node-count $FULL_CONE_PRIVATE_NODE_COUNT "
         [[ -n $FULL_CONE_PRIVATE_NODE_VM_COUNT ]] && command="$command --full-cone-private-node-vm-count $FULL_CONE_PRIVATE_NODE_VM_COUNT "
         [[ -n $FULL_CONE_PRIVATE_NODE_VOLUME_SIZE ]] && command="$command --full-cone-private-node-volume-size $FULL_CONE_PRIVATE_NODE_VOLUME_SIZE "
