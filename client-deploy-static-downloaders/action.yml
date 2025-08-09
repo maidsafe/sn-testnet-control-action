@@ -23,6 +23,8 @@ inputs:
     description: The size of the Client VMs
   delayed-verifier-batch-size:
     description: The batch size for the delayed verifier downloader
+  delayed-verifier-quorum-value:
+    description: The quorum value for the delayed verifier downloader
   disable-delayed-verifier:
     description: Set to disable the delayed-verifier downloader on the VMs
     default: false
@@ -51,6 +53,8 @@ inputs:
     description: The address of the EVM payment token contract
   evm-rpc-url:
     description: The RPC URL for the EVM network when using a custom network type
+  file-address:
+    description: The address of a specific file to download
   name:
     description: The name of the environment
     required: true
@@ -98,6 +102,7 @@ runs:
         CLIENT_VM_COUNT: ${{ inputs.client-vm-count }}
         CLIENT_VM_SIZE: ${{ inputs.client-vm-size }}
         DELAYED_VERIFIER_BATCH_SIZE: ${{ inputs.delayed-verifier-batch-size }}
+        DELAYED_VERIFIER_QUORUM_VALUE: ${{ inputs.delayed-verifier-quorum-value }}
         DISABLE_DELAYED_VERIFIER: ${{ inputs.disable-delayed-verifier }}
         DISABLE_PERFORMANCE_VERIFIER: ${{ inputs.disable-performance-verifier }}
         DISABLE_RANDOM_VERIFIER: ${{ inputs.disable-random-verifier }}
@@ -107,6 +112,7 @@ runs:
         EVM_NETWORK_TYPE: ${{ inputs.evm-network-type }}
         EVM_PAYMENT_TOKEN_ADDRESS: ${{ inputs.evm-payment-token-address }}
         EVM_RPC_URL: ${{ inputs.evm-rpc-url }}
+        FILE_ADDRESS: ${{ inputs.file-address }}
         NAME: ${{ inputs.name }}
         NETWORK_ID: ${{ inputs.network-id }}
         NETWORK_CONTACTS_URL: ${{ inputs.network-contacts-url }}
@@ -136,6 +142,7 @@ runs:
         [[ -n $CLIENT_VM_COUNT ]] && command="$command --client-vm-count $CLIENT_VM_COUNT "
         [[ -n $CLIENT_VM_SIZE ]] && command="$command --client-vm-size $CLIENT_VM_SIZE "
         [[ -n $DELAYED_VERIFIER_BATCH_SIZE ]] && command="$command --delayed-verifier-batch-size $DELAYED_VERIFIER_BATCH_SIZE "
+        [[ -n $DELAYED_VERIFIER_QUORUM_VALUE ]] && command="$command --delayed-verifier-quorum-value $DELAYED_VERIFIER_QUORUM_VALUE "
         [[ $DISABLE_DELAYED_VERIFIER == "true" ]] && command="$command --disable-delayed-verifier "
         [[ $DISABLE_PERFORMANCE_VERIFIER == "true" ]] && command="$command --disable-performance-verifier "
         [[ $DISABLE_RANDOM_VERIFIER == "true" ]] && command="$command --disable-random-verifier "
@@ -144,6 +151,7 @@ runs:
         [[ -n $EVM_NETWORK_TYPE ]] && command="$command --evm-network-type $EVM_NETWORK_TYPE "
         [[ -n $EVM_PAYMENT_TOKEN_ADDRESS ]] && command="$command --evm-payment-token-address $EVM_PAYMENT_TOKEN_ADDRESS "
         [[ -n $EVM_RPC_URL ]] && command="$command --evm-rpc-url \"$EVM_RPC_URL\" "
+        [[ -n $FILE_ADDRESS ]] && command="$command --file-address $FILE_ADDRESS "
         [[ -n $NETWORK_CONTACTS_URL ]] && command="$command --network-contacts-url $NETWORK_CONTACTS_URL "
         [[ -n $PEER ]] && command="$command --peer $PEER "
         [[ -n $PERFORMANCE_VERIFIER_BATCH_SIZE ]] && command="$command --performance-verifier-batch-size $PERFORMANCE_VERIFIER_BATCH_SIZE "
