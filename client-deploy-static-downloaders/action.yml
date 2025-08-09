@@ -87,6 +87,8 @@ inputs:
       Skip building the autonomi binaries if they were built during a previous run of the deployer
       using the same branch, repo-owner and name arguments.
     default: false
+  sleep-duration:
+    description: Duration to sleep in seconds between downloader operations
 
 runs:
   using: composite
@@ -123,6 +125,7 @@ runs:
         REGION: ${{ inputs.region }}
         REPO_OWNER: ${{ inputs.repo-owner }}
         SKIP_BINARY_BUILD: ${{ inputs.skip-binary-build }}
+        SLEEP_DURATION: ${{ inputs.sleep-duration }}
       shell: bash
       run: |
         set -e
@@ -159,6 +162,7 @@ runs:
         [[ -n $REGION ]] && command="$command --region $REGION "
         [[ -n $REPO_OWNER ]] && command="$command --repo-owner $REPO_OWNER "
         [[ $SKIP_BINARY_BUILD == "true" ]] && command="$command --skip-binary-build "
+        [[ -n $SLEEP_DURATION ]] && command="$command --sleep-duration $SLEEP_DURATION "
 
         echo "Will run testnet-deploy with: $command"
         eval $command
