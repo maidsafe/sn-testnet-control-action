@@ -1,0 +1,22 @@
+name: Clean Client Deploy
+description: Destroys an existing client deployment
+inputs:
+  network-name:
+    description: The name of the network
+    required: true
+  provider:
+    description: The cloud provider. Accepts 'aws' or 'digital-ocean'.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Clean client deploy
+      env:
+        NETWORK_NAME: ${{ inputs.network-name }}
+        PROVIDER: ${{ inputs.provider }}
+      shell: bash
+      run: |
+        set -e
+        cd sn-testnet-deploy
+        testnet-deploy clients clean --name "$NETWORK_NAME" --provider "$PROVIDER"
