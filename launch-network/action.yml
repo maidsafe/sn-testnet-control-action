@@ -139,6 +139,8 @@ inputs:
     default: false
   upload-interval:
     description: The interval to apply between each upload. Units are seconds.
+  upload-size:
+    description: The size in megabytes of the file to be uploaded by the random uploader service.
   uploaders-count:
     description: Number of uploaders to run per VM
   wallet-secret-key:
@@ -208,6 +210,7 @@ runs:
         SYMMETRIC_PRIVATE_NODE_VM_COUNT: ${{ inputs.symmetric-private-node-vm-count }}
         SYMMETRIC_PRIVATE_NODE_VOLUME_SIZE: ${{ inputs.symmetric-private-node-volume-size }}
         UPLOAD_INTERVAL: ${{ inputs.upload-interval }}
+        UPLOAD_SIZE: ${{ inputs.upload-size }}
         UPLOADERS_COUNT: ${{ inputs.uploaders-count }}
         TO_GENESIS: ${{ inputs.to-genesis }}
         WALLET_SECRET_KEY: ${{ inputs.wallet-secret-key }}
@@ -272,6 +275,7 @@ runs:
         [[ -n $SYMMETRIC_PRIVATE_NODE_VM_COUNT ]] && command="$command --symmetric-private-node-vm-count $SYMMETRIC_PRIVATE_NODE_VM_COUNT "
         [[ -n $SYMMETRIC_PRIVATE_NODE_VOLUME_SIZE ]] && command="$command --symmetric-private-node-volume-size $SYMMETRIC_PRIVATE_NODE_VOLUME_SIZE "
         [[ -n $UPLOAD_INTERVAL ]] && command="$command --upload-interval $UPLOAD_INTERVAL "
+        [[ -n $UPLOAD_SIZE ]] && command="$command --upload-size $UPLOAD_SIZE "
         [[ -n $UPLOADERS_COUNT ]] && command="$command --uploaders-count $UPLOADERS_COUNT "
         [[ -n $TO_GENESIS ]] && command="$command --to-genesis "
         [[ -n $WALLET_SECRET_KEY ]] && command="$command --funding-wallet-secret-key $WALLET_SECRET_KEY "
